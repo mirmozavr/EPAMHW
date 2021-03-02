@@ -9,14 +9,14 @@ Examples:
 
 
 def find_maximal_subarray_sum(nums: list, k: int):
-    """Max sum of continuous sub-array"""
+    """Max sum of continuous sub-array."""
     ans = -float("INF")
     index = 0
-    N = len(nums)
+    n = len(nums)
     # fixing situation where k > N
-    k = min(N, k)
+    k = min(n, k)
     # find max subarray sum and its start index
-    for i in range(N - k + 1):
+    for i in range(n - k + 1):
         if sum(nums[i : i + k]) > ans:
             ans = sum(nums[i : i + k])
             index = i
