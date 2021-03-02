@@ -7,7 +7,7 @@ max_length = list(range(1000))
 
 
 @pytest.mark.parametrize(
-    ["value", "expected_result"],
+    ("value", "expected_result"),
     [
         ((all_zero_x5, all_zero_x5, all_zero_x5, all_zero_x5), 625),
         ((empty, empty, empty, empty), 0),
@@ -15,6 +15,7 @@ max_length = list(range(1000))
         (([1, 2, 3, 4], [1, 2, 3, 4], [1, 2, 3, 4], [-3, -12, 0, 0]), 2),
         (([-1], [-1], [-1], [-1]), 0),
         (([-1], [-1], [-1], [3]), 1),
+        (([2], [-1], [-1], [0]), 1),
     ],
 )
 def test_check_sum_of_four(value, expected_result: int):
