@@ -1,3 +1,5 @@
+"""Just a docstring."""
+
 import os
 import sys
 
