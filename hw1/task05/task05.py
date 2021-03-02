@@ -1,5 +1,6 @@
 """
 Given a list of integers numbers "nums".
+
 You need to find a sub-array with length less equal to "k", with maximal sum.
 The written function should return the sum of this sub-array.
 Examples:
@@ -8,7 +9,7 @@ Examples:
 """
 
 
-def find_maximal_subarray_sum(nums: list, k: int):
+def find_maximal_subarray_sum(nums: list, k: int) -> int:
     """Max sum of continuous sub-array."""
     ans = -float("INF")
     index = 0
