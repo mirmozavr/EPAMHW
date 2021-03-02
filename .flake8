@@ -1,7 +1,8 @@
 [flake8]
 ignore = E203, E501, W503,  # handled by black
          ANN101, ANN204,
-         D103
+         D100,
+         D103,
          D104,  # no docstring in public package
          D200,  # One-line docstring should fit on one line with quotes
          D107,  #  Missing docstring in __init__
@@ -9,8 +10,8 @@ ignore = E203, E501, W503,  # handled by black
 exclude =
     *_venv
     venv_*
-max-complexity = 7
-max-cognitive-complexity = 5
+max-complexity = 10
+max-cognitive-complexity = 10
 per-file-ignores =
     # No docs and annotation required for tests
     test*.py: D10, D101, D103, S101, ANN
