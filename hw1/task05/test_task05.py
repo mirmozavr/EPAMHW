@@ -7,7 +7,7 @@ script_dir = os.path.dirname(__file__)
 
 
 @pytest.mark.parametrize(
-    ["data", "length", "expected_result"],
+    ("data", "length", "expected_result"),
     [
         ([1, 3, -1, -3, 5, 3, 6, 7], 3, 16),
         ([], 4, 0),
