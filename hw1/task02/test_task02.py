@@ -27,7 +27,7 @@ true_fib_seq = [
 
 
 @pytest.mark.parametrize(
-    ["value", "expected_result"],
+    ("value", "expected_result"),
     [
         (true_fib_seq, True),
         ([0], True),
