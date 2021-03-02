@@ -11,7 +11,7 @@ from collections import defaultdict
 
 
 def check_sum_of_four(a: list, b: list, c: list, d: list) -> int:
-    """Count sum of four where sum = 0"""
+    """Count sum of four where sum = 0."""
     s = defaultdict(int)
     n = len(a)
     ans = 0
