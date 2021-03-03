@@ -38,6 +38,8 @@ true_fib_seq = [
         ([], False),
         ([-5, 0, 1, 1, 2], False),
         ([1, 1, 2], False),
+        ([0, 1, 1], True),
+        ([0, -1, -1], False),
     ],
 )
 def test_check_fib(value: list, expected_result: bool):
