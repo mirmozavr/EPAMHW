@@ -12,17 +12,17 @@ from collections import defaultdict
 
 def check_sum_of_four(a: list, b: list, c: list, d: list) -> int:
     """Count sum of four where sum = 0."""
-    s = defaultdict(int)
-    n = len(a)
-    ans = 0
-    for i in range(n):
-        for j in range(n):
+    cache = defaultdict(int)
+    size = len(a)
+    count = 0
+    for i in range(size):
+        for j in range(size):
             remainder = 0 - (a[i] + b[j])
-            s[remainder] += 1
+            cache[remainder] += 1
 
-    for i in range(n):
-        for j in range(n):
+    for i in range(size):
+        for j in range(size):
             subtrahend = c[i] + d[j]
-            if subtrahend in s:
-                ans += s[subtrahend]
-    return ans
+            if subtrahend in cache:
+                count += cache[subtrahend]
+    return count
