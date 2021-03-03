@@ -11,10 +11,7 @@ def check_fib(data: list) -> bool:
 
     # process short data sequences (2 or less)
     if len(data) < 3:
-        if data in ([0], [0, 1]):
-            return True
-        else:
-            return False
+        return data in ([0], [0, 1])
 
     if data[0:2] != [0, 1]:
         return False
