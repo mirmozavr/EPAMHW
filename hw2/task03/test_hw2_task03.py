@@ -1,10 +1,5 @@
-import os
-import sys
-
 import pytest
 from task03 import combinations
-
-sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 
 
 @pytest.mark.parametrize(
