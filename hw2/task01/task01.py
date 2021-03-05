@@ -16,7 +16,7 @@ from collections import Counter
 def open_file_and_count_chars(file_path: str) -> Counter:
     """Open file and decipher and count chars."""
     counter = Counter()
-    with open("data.txt", "r") as text:
+    with open(file_path, "r", encoding="utf-8") as text:
         for line in text:
             while "\\u" in line:
                 index = line.index("\\u")
@@ -27,7 +27,7 @@ def open_file_and_count_chars(file_path: str) -> Counter:
 
 
 def open_file_and_yield_line(file_path: str) -> str:
-    with open("data.txt", "r") as text:
+    with open(file_path, "r", encoding="utf-8") as text:
         for line in text:
             while "\\u" in line:
                 index = line.index("\\u")
