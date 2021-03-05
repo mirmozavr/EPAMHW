@@ -10,12 +10,12 @@ assert = custom_range(string.ascii_lowercase, 'g') == ['a', 'b', 'c', 'd', 'e', 
 assert = custom_range(string.ascii_lowercase, 'g', 'p') == ['g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o']
 assert = custom_range(string.ascii_lowercase, 'p', 'g', -2) == ['p', 'n', 'l', 'j', 'h']
 """
+from typing import Any, Iterable, List
 
 
 def custom_range(
-    it_obj: str, start: str = None, end: str = None, step: int = 1
-) -> list:
-    result = []
+    it_obj: Iterable, start: Any = None, end: Any = None, step: int = 1
+) -> List:
     if start is None:
         start = 0
     else:
@@ -25,7 +25,4 @@ def custom_range(
     else:
         end = it_obj.index(end)
 
-    for i in range(start, end, step):
-        result.append(it_obj[i])
-
-    return result
+    return list(it_obj[start:end:step])

@@ -45,3 +45,4 @@ def test_custom_range():
         "E",
         "B",
     ]
+    assert custom_range([1, 2, 3, 4, 5, 6, 7, 8], 2, 7, 2) == [2, 4, 6]
