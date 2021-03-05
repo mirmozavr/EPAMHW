@@ -1,5 +1,5 @@
 import pytest
-from task03 import combinations
+from hw2_task03 import combinations
 
 
 @pytest.mark.parametrize(
