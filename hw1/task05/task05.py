@@ -17,8 +17,6 @@ def find_maximal_subarray_sum(nums: list, k: int) -> int:
     k = min(size, k)
 
     for i in range(size):
-        for j in range(1, k + 1):
-            yet_max_sum = max(sum(nums[i : i + j]), yet_max_sum)
-            if i + j >= size:
-                break
+        for j in range(i + 1, min(i + k, size) + 1):
+            yet_max_sum = max(sum(nums[i:j]), yet_max_sum)
     return yet_max_sum
