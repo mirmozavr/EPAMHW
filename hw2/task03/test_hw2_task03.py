@@ -1,17 +1,8 @@
-import pytest
-from hw2_task03 import combinations
+from hw2_task03 import combination_of_lists
 
 
-@pytest.mark.parametrize(
-    ("value", "expected_result"),
-    [
-        (([1, 2], [3, 4]), [(1, 3), (1, 4), (2, 3), (2, 4)]),
-        (([1], [3]), [(1, 3)]),
-        (([5, 9], [9, 5]), [(5, 9), (5, 5), (9, 9), (9, 5)]),
-        (([0, 0], [0, 0]), [(0, 0), (0, 0), (0, 0), (0, 0)]),
-    ],
-)
-def test_check_fib(value: list, expected_result: bool):
-    actual_result = combinations(*value)
-
-    assert actual_result == expected_result
+def test_combination_of_lists():
+    assert combination_of_lists([1, 2], [3, 4]) == [[1, 3], [1, 4], [2, 3], [2, 4]]
+    assert combination_of_lists([1], [3]) == [[1, 3]]
+    assert combination_of_lists([5, 9], [9, 5]) == [[5, 9], [5, 5], [9, 9], [9, 5]]
+    assert combination_of_lists([0, 0], [0, 0]) == [[0, 0], [0, 0], [0, 0], [0, 0]]
