@@ -11,7 +11,7 @@ class Filter:
         self.functions = list(args)
 
     def apply(self, data):
-        print('self functions', self.functions)
+        print("self functions", self.functions)
         # for item in data:
         #     for test in self.functions:
         #         print(item, test(item))
@@ -30,7 +30,7 @@ def make_filter(keywords):
     Generate filter object for specified keywords
     """
     filter_funcs = []
-    print('accepted kw', keywords)
+    print("accepted kw", keywords)
 
     def new_filter(data):
         return
@@ -42,23 +42,19 @@ def make_filter(keywords):
             if key not in data:
                 return False
             return key in data and data[key] == value
+
         # filter_funcs.append(lambda data: key in data and data[key] == value)
     return Filter(*filter_funcs)
 
 
 sample_data = [
-     {
-         "name": "Bill",
-         "last_name": "Gilbert",
-         "occupation": "was here",
-         "type": "person",
-     },
-     {
-         "is_dead": True,
-         "kind": "parrot",
-         "type": "bird",
-         "name": "polly"
-     },
+    {
+        "name": "Bill",
+        "last_name": "Gilbert",
+        "occupation": "was here",
+        "type": "person",
+    },
+    {"is_dead": True, "kind": "parrot", "type": "bird", "name": "polly"},
 ]
 
 # should return only second entry from the list
@@ -66,8 +62,14 @@ sample_data = [
 # print(z)
 """There are multiple bugs in this code.
  Find them all and write tests for faulty cases."""
-z = make_filter({'name': 'polly', 'job': 'janitor',  'last_name': "Gilbert", }).apply(sample_data)
-print('fin rez', z)
+z = make_filter(
+    {
+        "name": "polly",
+        "job": "janitor",
+        "last_name": "Gilbert",
+    }
+).apply(sample_data)
+print("fin rez", z)
 
 # assert make_filter({'name': 'polly', 'type': 'bird'}).apply(sample_data) == [{
 #          "is_dead": True,
