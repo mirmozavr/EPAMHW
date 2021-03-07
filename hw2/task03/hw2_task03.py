@@ -15,8 +15,7 @@ assert comb([1, 2], [3, 4]) == [
 
 
 def combination_of_lists(*args: list) -> list:
-    pools = [tuple(pool) for pool in args]
     result = [[]]
-    for pool in pools:
-        result = [x + [y] for x in result for y in pool]
+    for pool in args:
+        result = [base + [suffix] for base in result for suffix in pool]
     return result
