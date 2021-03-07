@@ -30,10 +30,13 @@ def cache(func: Callable) -> Callable:
     f_cache = {}
 
     def wrapper(*args: Any) -> Any:
-        if args in f_cache:
-            return f_cache[args]
+        # nums = tuple(number for number in args)
+        nums = tuple(args)
+        if nums in f_cache:
+            return f_cache[nums]
 
-        f_cache[args] = func(*args)
-        return f_cache[args]
-
+        f_cache[nums] = func(*nums)
+        print(f_cache)
+        return f_cache[nums]
+    print(f_cache)
     return wrapper
