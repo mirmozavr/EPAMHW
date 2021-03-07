@@ -12,9 +12,21 @@ Example 2:
 Input: [2,2,1,1,1,2,2]
 Output: 2, 1
 """
-from collections import Counter
+from collections import defaultdict
 
 
 def major_and_minor_elem(numbers: list) -> tuple:
-    counter = Counter(numbers)
-    return counter.most_common()[0][0], counter.most_common()[-1][0]
+    counter = defaultdict(int)
+    major = minor = None
+    major_count = -float("INF")
+    minor_count = float("INF")
+    for item in numbers:
+        counter[item] += 1
+
+    for item, amount in counter.items():
+        if amount > major_count:
+            major, major_count = item, amount
+        if amount < minor_count:
+            minor, minor_count = item, amount
+
+    return major, minor
