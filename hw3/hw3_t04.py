@@ -12,12 +12,8 @@ Write a function that detects if a number is Armstrong number in functionaly sty
  - do not use loops, preferably using list comprehensions
 ### Example function signature and call
 """
-from functools import reduce
 
 
 def is_armstrong(number: int) -> bool:
     power = len(str(number))
-    return number == reduce(
-        lambda left, right: left + right,
-        map(lambda symbol: int(symbol) ** power, str(number)),
-    )
+    return number == sum(int(symbol) ** power for symbol in str(number))
