@@ -87,9 +87,9 @@ def count_non_ascii_chars(file_path: str) -> int:
 
 def get_most_common_non_ascii_char(file_path: str) -> str:
     counter = open_file_and_count_chars(file_path)
-    char = ""
-    char_count = -float("INF")
+    mcna_char = ""
+    mcna_char_count = -float("INF")
     for char in counter:
-        if char not in string.printable and counter[char] > char_count:
-            char, char_count = char, counter[char]
-    return char
+        if char not in string.printable and counter[char] > mcna_char_count:
+            mcna_char, mcna_char_count = char, counter[char]
+    return mcna_char  # noqa: R504
