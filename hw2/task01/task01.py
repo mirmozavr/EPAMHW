@@ -10,29 +10,35 @@ Complete using only default collections:
 """
 
 import string
-from collections import Counter
 
 
-def open_file_and_count_chars(file_path: str) -> Counter:
+def open_file_and_count_chars(file_path: str) -> dict:
     """Open file and decipher and count chars."""
-    counter = Counter()
+    counter = {}
     with open(file_path, "r", encoding="utf-8") as text:
         for line in text:
-            while "\\u" in line:
-                index = line.index("\\u")
+            index = line.find("\\u")
+            while index > -1:
                 deciphered_char = chr(int("0x" + line[index + 2 : index + 6], 16))
                 line = line[:index] + deciphered_char + line[index + 6 :]
-            counter.update(Counter(line))
+                index = line.find("\\u")
+
+            for char in line:
+                if char in counter:
+                    counter[char] += 1
+                else:
+                    counter[char] = 1
     return counter
 
 
 def open_file_and_yield_line(file_path: str) -> str:
     with open(file_path, "r", encoding="utf-8") as text:
         for line in text:
-            while "\\u" in line:
-                index = line.index("\\u")
+            index = line.find("\\u")
+            while index > -1:
                 deciphered_char = chr(int("0x" + line[index + 2 : index + 6], 16))
                 line = line[:index] + deciphered_char + line[index + 6 :]
+                index = line.find("\\u")
             yield line
 
 
@@ -51,7 +57,14 @@ def get_longest_diverse_words(file_path: str) -> list:
 
 
 def get_rarest_char(file_path: str) -> str:
-    return open_file_and_count_chars(file_path).most_common()[-1][0]
+    counter = open_file_and_count_chars(file_path)
+    rarest_char = None
+    rarest_char_count = float("INF")
+    for char in counter:
+        if counter[char] < rarest_char_count:
+            rarest_char = char
+            rarest_char_count = counter[char]
+    return rarest_char  # noqa: R504
 
 
 def count_punctuation_chars(file_path: str) -> int:
@@ -74,7 +87,9 @@ def count_non_ascii_chars(file_path: str) -> int:
 
 def get_most_common_non_ascii_char(file_path: str) -> str:
     counter = open_file_and_count_chars(file_path)
+    char = ""
+    char_count = -float("INF")
     for char in counter:
-        if char not in string.printable:
-            return char
-    return "No non-ascii chars"
+        if char not in string.printable and counter[char] > char_count:
+            char, char_count = char, counter[char]
+    return char
