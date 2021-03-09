@@ -10,7 +10,7 @@ import hashlib
 import random
 import struct
 import time
-from multiprocessing import Process
+from multiprocessing import Pool
 
 
 def slow_calculate(value: int) -> int:
@@ -19,19 +19,6 @@ def slow_calculate(value: int) -> int:
     return sum(struct.unpack("<" + "B" * len(data), data))
 
 
-def slow_calculate_batch(*nums: int) -> None:
-    for num in nums:
-        slow_calculate(num)
-
-
-def slow_calc_500_numbers() -> None:
-    if __name__ == "__main__":
-        procs = []
-        for tens in range(50):
-            batch = tuple((tens * 10) + digit for digit in range(10))
-            proc = Process(target=slow_calculate_batch, args=batch)
-            procs.append(proc)
-            proc.start()
-
-        for proc in procs:
-            proc.join()
+def slow_calc_500_numbers() -> list:
+    with Pool(processes=50) as pool:
+        return pool.map(slow_calculate, range(500))
