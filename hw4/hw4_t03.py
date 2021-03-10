@@ -33,8 +33,8 @@ def my_precious_logger(text: str):
         print(text)
 
 
-my_precious_logger('error: bullshit')
-my_precious_logger('OK')
-my_precious_logger('error: bullshit')
+my_precious_logger("error: bullshit")
+my_precious_logger("OK")
+my_precious_logger("error: bullshit")
 # my_precious_logger('2nd')
 # my_precious_logger('errormessage: bullshit')
