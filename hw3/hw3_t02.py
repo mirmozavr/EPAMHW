@@ -21,4 +21,4 @@ def slow_calculate(value: int) -> int:
 
 def slow_calc_500_numbers() -> list:
     with Pool(processes=50) as pool:
-        return pool.map(slow_calculate, range(500))
+        return pool.map(slow_calculate, range(501))
