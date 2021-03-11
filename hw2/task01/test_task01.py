@@ -42,7 +42,7 @@ def test_get_longest_diverse_words(path: str, expected_result: list):
     [
         (
             (script_dir + "/test.txt"),
-            "ß",
+            "ä",
         )
     ],
 )

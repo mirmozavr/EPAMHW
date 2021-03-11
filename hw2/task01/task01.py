@@ -15,14 +15,8 @@ import string
 def open_file_and_count_chars(file_path: str) -> dict:
     """Open file and decipher and count chars."""
     counter = {}
-    with open(file_path, "r", encoding="utf-8") as text:
+    with open(file_path, "r", encoding="unicode-escape") as text:
         for line in text:
-            index = line.find("\\u")
-            while index > -1:
-                deciphered_char = chr(int("0x" + line[index + 2 : index + 6], 16))
-                line = line[:index] + deciphered_char + line[index + 6 :]
-                index = line.find("\\u")
-
             for char in line:
                 if char in counter:
                     counter[char] += 1
@@ -32,13 +26,8 @@ def open_file_and_count_chars(file_path: str) -> dict:
 
 
 def open_file_and_yield_line(file_path: str) -> str:
-    with open(file_path, "r", encoding="utf-8") as text:
+    with open(file_path, "r", encoding="unicode-escape") as text:
         for line in text:
-            index = line.find("\\u")
-            while index > -1:
-                deciphered_char = chr(int("0x" + line[index + 2 : index + 6], 16))
-                line = line[:index] + deciphered_char + line[index + 6 :]
-                index = line.find("\\u")
             yield line
 
 
@@ -68,28 +57,31 @@ def get_rarest_char(file_path: str) -> str:
 
 
 def count_punctuation_chars(file_path: str) -> int:
+    str_punctuation_set = set(string.punctuation)
     punctuation_char_count = 0
     counter = open_file_and_count_chars(file_path)
     for char in counter:
-        if char in string.punctuation:
+        if char in str_punctuation_set:
             punctuation_char_count += counter[char]
     return punctuation_char_count
 
 
 def count_non_ascii_chars(file_path: str) -> int:
+    printable_set = set(string.printable)
     non_ascii_char_count = 0
     counter = open_file_and_count_chars(file_path)
     for char in counter:
-        if char not in string.printable:
+        if char not in printable_set:
             non_ascii_char_count += counter[char]
     return non_ascii_char_count
 
 
 def get_most_common_non_ascii_char(file_path: str) -> str:
+    printable_set = set(string.printable)
     counter = open_file_and_count_chars(file_path)
     candidate_char = ""
     candidate_char_count = -float("INF")
     for char in counter:
-        if char not in string.printable and counter[char] > candidate_char_count:
+        if char not in printable_set and counter[char] > candidate_char_count:
             candidate_char, candidate_char_count = char, counter[char]
     return candidate_char  # noqa: R504
