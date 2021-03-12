@@ -10,6 +10,7 @@ Complete using only default collections:
 """
 
 import string
+from unicodedata import category
 
 
 def open_file_and_count_chars(file_path: str) -> dict:
@@ -57,11 +58,10 @@ def get_rarest_char(file_path: str) -> str:
 
 
 def count_punctuation_chars(file_path: str) -> int:
-    str_punctuation_set = set(string.punctuation)
     punctuation_char_count = 0
     counter = open_file_and_count_chars(file_path)
     for char in counter:
-        if char in str_punctuation_set:
+        if category(char).startswith("P"):
             punctuation_char_count += counter[char]
     return punctuation_char_count
 
