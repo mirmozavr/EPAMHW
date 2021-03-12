@@ -1,37 +1,45 @@
-from hw2_task04 import cache, calc_sum, function
+from hw3.hw3_task01 import TestPlug, cache_factory
 
 
-def test_func():
-    cache_function = cache(function)
-    val_1 = cache_function(*(100, 200))
-    val_2 = cache_function(*(100, 200))
+@cache_factory(times=3)
+def f(x):
+    return x * 1.1
+
+
+@cache_factory(times=2)
+def txt(text: str):
+    return text * 2
+
+
+@cache_factory(times=2)
+def object_function(any_object):
+    return any_object()
+
+
+def test_with_number():
+    val_1 = f(5)
+    val_2 = f(5)
+    val_3 = f(5)
+    assert val_1 is val_2 is val_3
+
+
+def test_with_string():
+    val_1 = txt("Bob")
+    val_2 = txt("Bob")
     assert val_1 is val_2
 
 
-def test_custom_sum_function():
-    cache_calc_sum = cache(calc_sum)
-    val_3 = cache_calc_sum(*(22, 44))
-    val_4 = cache_calc_sum(*(22, 44))
-    assert val_3 is val_4
+v1 = object_function(TestPlug)
+v2 = object_function(TestPlug)
+v3 = object_function(TestPlug)
+v4 = object_function(TestPlug)
 
 
-def test_sum_list_2_numbers():
-    cache_sum = cache(sum)
-    v1 = cache_sum([100, 200])
-    v2 = cache_sum([100, 200])
-    v3 = cache_sum([100, 200])
-    assert v1 is v2 is v3
+def test_class_same_object():
+    assert v1 is v2 is v3, "Their ID is equal, same object from cache"
 
 
-def test_sum_list_4_numbers():
-    cache_sum = cache(sum)
-    v5 = cache_sum([30, 50, 10, -40])
-    v6 = cache_sum([30, 50, 10, -40])
-    assert v5 is v6
-
-
-def test_sum_list_1_number():
-    cache_sum = cache(sum)
-    v5 = cache_sum([3])
-    v6 = cache_sum([3])
-    assert v5 is v6
+def test_class_outside_cache_size():
+    assert v1 is not v4, "Their ID is not equal, other object"
+    assert v2 is not v4, "Their ID is not equal, other object"
+    assert v3 is not v4, "Their ID is not equal, other object"

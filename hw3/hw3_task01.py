@@ -30,21 +30,31 @@ import pickle  # noqa: S403
 from typing import Any, Callable
 from unittest.mock import MagicMock
 
+
+class TestPlug:
+    """Test plug for class object."""
+
+    pass
+
+
 mocker = MagicMock()
 
 
-def cache(func: Callable, times: int = 3) -> Callable:
-    cache_db = {}
+def cache_factory(times: int = 3) -> Callable:
+    def cache(func: Callable) -> Callable:
+        cache_db = {}
 
-    def wrapper(*args: Any) -> Any:
-        if mocker.call_count > times:
-            mocker.reset_mock()
-            cache_db.clear()
-        pickle_dump = pickle.dumps(args)
-        if pickle_dump not in cache_db:
-            cache_db[pickle_dump] = func(*args)
+        def wrapper(*args: Any) -> Any:
+            if mocker.call_count > times:
+                mocker.reset_mock()
+                cache_db.clear()
+            pickle_dump = pickle.dumps(args)
+            if pickle_dump not in cache_db:
+                cache_db[pickle_dump] = func(*args)
 
-        mocker()
-        return cache_db[pickle_dump]
+            mocker()
+            return cache_db[pickle_dump]
 
-    return wrapper
+        return wrapper
+
+    return cache
