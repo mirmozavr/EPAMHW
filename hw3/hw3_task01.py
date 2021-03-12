@@ -26,23 +26,25 @@ def f():
 
 
 """
-from unittest.mock import MagicMock
 import pickle  # noqa: S403
 from typing import Any, Callable
+from unittest.mock import MagicMock
+
+mocker = MagicMock()
 
 
-def cache(func: Callable, times=3) -> Callable:
-    f_cache = {}
+def cache(func: Callable, times: int = 3) -> Callable:
+    cache_db = {}
 
     def wrapper(*args: Any) -> Any:
+        if mocker.call_count > times:
+            mocker.reset_mock()
+            cache_db.clear()
         pickle_dump = pickle.dumps(args)
-        if pickle_dump not in f_cache:
-            f_cache[pickle_dump] = func(*args)
-        return f_cache[pickle_dump]
+        if pickle_dump not in cache_db:
+            cache_db[pickle_dump] = func(*args)
+
+        mocker()
+        return cache_db[pickle_dump]
 
     return wrapper
-
-
-@cache(times=2)
-def x():
-    pass
