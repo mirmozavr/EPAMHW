@@ -10,6 +10,7 @@ Complete using only default collections:
 """
 
 import sys
+from typing import Generator
 from unicodedata import category
 
 codepoints = range(sys.maxunicode + 1)
@@ -30,7 +31,7 @@ def open_file_and_count_chars(file_path: str) -> dict:
     return counter
 
 
-def open_file_and_yield_line(file_path: str) -> str:
+def open_file_and_yield_line(file_path: str) -> Generator:
     with open(file_path, "r", encoding="unicode-escape") as text:
         for line in text:
             yield line
