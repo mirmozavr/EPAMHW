@@ -70,7 +70,7 @@ def test_count_punctuation_chars(path: str, expected_result: int):
     [
         (
             (script_dir + "/test.txt"),
-            4,
+            0,
         )
     ],
 )
@@ -84,7 +84,7 @@ def test_count_non_ascii_chars(path: str, expected_result: int):
     [
         (
             (script_dir + "/test.txt"),
-            "Ü",
+            "",
         )
     ],
 )
