@@ -79,7 +79,7 @@ def test_with_non_existent_key():
     )
 
 
-def dont_test_both_characters_by_diff_parameter():
+def test_more_characters_by_2_parameter():
     sample_data = [
         {
             "name": "Bill",
@@ -88,13 +88,34 @@ def dont_test_both_characters_by_diff_parameter():
             "type": "person",
         },
         {"is_dead": True, "kind": "parrot", "type": "bird", "name": "polly"},
+        {"is_dead": True, "occupation": "was here", "type": "bird", "name": "polly"},
+        {"is_dead": False, "occupation": "was here", "type": "fish", "name": "sharky"},
+        {
+            "name": "John",
+            "last_name": "Wayne",
+            "occupation": "was here",
+            "type": "person",
+        },
+        {
+            "name": "David",
+            "kind": "nuclear",
+            "occupation": "was here",
+            "type": "cyborg",
+        },
     ]
-    assert (
-        make_filter(
-            {
-                "name": "Bill",  # noqa: F601
-                "name": "polly",  # noqa: F601
-            }
-        ).apply(sample_data)
-        == []
-    )
+    assert make_filter({"occupation": "was here", "type": "person"}).apply(
+        sample_data
+    ) == [
+        {
+            "name": "Bill",
+            "last_name": "Gilbert",
+            "occupation": "was here",
+            "type": "person",
+        },
+        {
+            "name": "John",
+            "last_name": "Wayne",
+            "occupation": "was here",
+            "type": "person",
+        },
+    ]
