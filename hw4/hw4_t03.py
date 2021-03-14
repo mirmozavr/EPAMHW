@@ -1,4 +1,6 @@
 """
+HW4 task03.
+
 Write a function that will receive a string and write it to stderr
 if line starts with "error" and to the stdout otherwise.
 
@@ -26,15 +28,8 @@ You will learn:
 import sys
 
 
-def my_precious_logger(text: str):
-    if text[0:5] == "error":
-        print(text, file=sys.stderr)
+def my_precious_logger(text: str) -> str:
+    if text.startswith("error"):
+        print(text, file=sys.stderr)  # noqa: T001
     else:
-        print(text)
-
-
-my_precious_logger("error: bullshit")
-my_precious_logger("OK")
-my_precious_logger("error: bullshit")
-# my_precious_logger('2nd')
-# my_precious_logger('errormessage: bullshit')
+        print(text)  # noqa: T001
