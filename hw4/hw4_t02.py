@@ -27,16 +27,15 @@ You will learn:
 * https://docs.python.org/3/library/urllib.request.html#urllib.request.urlopen
 """
 from unittest.mock import Mock
-
-from requests import get
+from urllib.request import urlopen
 
 
 def get_url_return_str(url: str) -> str:
     try:
-        r = get(url)
+        r = urlopen(url)  # noqa: S310
     except Exception:
         raise ValueError(f"Unreachable {url}")
-    return r.text
+    return r.read().decode("utf-8")
 
 
 def count_dots_on_i(url: str) -> int:
