@@ -28,12 +28,12 @@ You will learn:
 """
 from unittest.mock import Mock
 
-import requests
+from requests import get
 
 
 def get_url_return_str(url: str) -> str:
     try:
-        r = requests.get(url)
+        r = get(url)
     except Exception:
         raise ValueError(f"Unreachable {url}")
     return r.text
