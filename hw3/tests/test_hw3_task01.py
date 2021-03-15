@@ -1,32 +1,30 @@
 from hw3.hw3_task01 import TestPlug, cache_factory
 
 
-@cache_factory(times=3)
-def f(x):
-    return x * 1.1
-
-
-@cache_factory(times=2)
-def txt(text: str):
-    return text * 2
-
-
 @cache_factory(times=2)
 def object_function(any_object):
     return any_object()
 
 
 def test_with_number():
+    @cache_factory(times=3)
+    def f(x):
+        return x * 1.1
+
     val_1 = f(5)
     val_2 = f(5)
     val_3 = f(5)
-    assert val_1 is val_2 is val_3
+    assert val_1 == val_2 == val_3
 
 
 def test_with_string():
+    @cache_factory(times=2)
+    def txt(text: str):
+        return text * 2
+
     val_1 = txt("Bob")
     val_2 = txt("Bob")
-    assert val_1 is val_2
+    assert val_1 == val_2
 
 
 v1 = object_function(TestPlug)
