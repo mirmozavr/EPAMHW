@@ -19,14 +19,6 @@ import pickle  # noqa: S403
 from typing import Any, Callable
 
 
-def function(a: int, b: int) -> int:
-    return (a ** b) ** 2
-
-
-def calc_sum(a: int, b: int) -> int:
-    return a + b
-
-
 def cache(func: Callable) -> Callable:
     f_cache = {}
 

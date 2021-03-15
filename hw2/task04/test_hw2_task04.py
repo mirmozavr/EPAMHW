@@ -1,4 +1,12 @@
-from hw2_task04 import cache, calc_sum, function
+from hw2_task04 import cache
+
+
+def function(a: int, b: int) -> int:
+    return (a ** b) ** 2
+
+
+def calc_sum(a: int, b: int) -> int:
+    return a + b
 
 
 def test_func():
