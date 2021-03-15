@@ -1,7 +1,7 @@
 from hw3.hw3_t03 import make_filter
 
 
-def test_polly():
+def test_positive_for_1_subject():
     sample_data = [
         {
             "name": "Bill",
@@ -16,7 +16,7 @@ def test_polly():
     ]
 
 
-def test_both_characters_by_diff_parameter():
+def test_both_characters_by_diff_key_value_pairs():
     sample_data = [
         {
             "name": "Bill",
@@ -79,7 +79,7 @@ def test_with_non_existent_key():
     )
 
 
-def test_more_characters_by_2_parameter():
+def test_more_characters_by_2_key_value_pairs():
     sample_data = [
         {
             "name": "Bill",
@@ -87,9 +87,6 @@ def test_more_characters_by_2_parameter():
             "occupation": "was here",
             "type": "person",
         },
-        {"is_dead": True, "kind": "parrot", "type": "bird", "name": "polly"},
-        {"is_dead": True, "occupation": "was here", "type": "bird", "name": "polly"},
-        {"is_dead": False, "occupation": "was here", "type": "fish", "name": "sharky"},
         {
             "name": "John",
             "last_name": "Wayne",
@@ -99,7 +96,7 @@ def test_more_characters_by_2_parameter():
         {
             "name": "David",
             "kind": "nuclear",
-            "occupation": "was here",
+            "occupation": "other",
             "type": "cyborg",
         },
     ]
