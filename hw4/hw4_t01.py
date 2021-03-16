@@ -26,7 +26,6 @@ You will learn:
 **** https://docs.python.org/3/tutorial/errors.html#raising-exceptions
 """
 import os
-from shutil import rmtree
 
 file_path = os.path.dirname(__file__) + "/tests/data221.txt"
 
@@ -39,7 +38,4 @@ def read_magic_number(path: str) -> bool:
                 return True
             return False
     except Exception:
-        raise ValueError("Error text")
-    finally:
-        rmtree(os.path.dirname(__file__) + "/__pycache__", ignore_errors=True)
-        rmtree(os.path.dirname(__file__) + "/tests/__pycache__", ignore_errors=True)
+        raise ValueError
