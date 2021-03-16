@@ -34,8 +34,9 @@ You will learn:
 from typing import List
 
 
+def get_fizz_buzz_or_number(number: int) -> str:
+    return ((not number % 3) * "fizz" + (not number % 5) * "buzz") or str(number)
+
+
 def fizzbuzz(n: int) -> List[str]:
-    return [
-        ((not number % 3) * "fizz" + (not number % 5) * "buzz") or str(number)
-        for number in range(1, n + 1)
-    ]
+    return [get_fizz_buzz_or_number(num) for num in range(1, n + 1)]
