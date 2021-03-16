@@ -88,8 +88,6 @@ some more text lines
     assert read_magic_number(directory / "test_data.txt") is False
 
 
-def test_file_doesnt_exist_value_error(tmp_path):
-    directory = tmp_path / "sub_directory"
-    directory.mkdir()
+def test_file_doesnt_exist_value_error():
     with pytest.raises(ValueError):  # noqa: PT011
-        read_magic_number(directory / "missing_file.txt")
+        read_magic_number("missing_file.txt")

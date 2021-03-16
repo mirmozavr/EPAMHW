@@ -34,8 +34,6 @@ def read_magic_number(path: str) -> bool:
     try:
         with open(path, "r", encoding="utf-8") as text:
             first_line = text.readline().strip()
-            if first_line.isdigit() and 1 <= int(first_line) < 3:
-                return True
-            return False
+            return first_line.isdigit() and 1 <= int(first_line) < 3
     except Exception:
         raise ValueError
