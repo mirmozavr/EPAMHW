@@ -1,4 +1,6 @@
 1) Install Python 3.8 (https://www.python.org/downloads/)
-2) Open command line or PyCharm terminal (optional)
-3) Run file directly (python example.py). If all tests work, there will be no output.
-4) Use additional -v (python example.py -v) to print a detailed log of what it’s trying, and print a summary at the end.
+2) Install pytest library (pip install pytest)
+3) Open command line or PyCharm terminal (optional)
+4) Navigate ROOT directory of a project (use 'cd' command to navigate in Pycharm terminal)
+5) Run 'pytest' command
+6) Test results will be shown in terminal, failed cases will be detailed
