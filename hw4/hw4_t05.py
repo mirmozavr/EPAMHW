@@ -21,9 +21,7 @@ Definition of done:
 from typing import Generator
 
 
-def fizzbuzz(n: int) -> Generator:
-    for item in (
-        ((not number % 3) * "fizz" + (not number % 5) * "buzz") or str(number)
-        for number in range(1, n + 1)
-    ):
-        yield item
+def fizzbuzz(target: int) -> Generator:
+    fizzes = [""] + ([""] * 2 + ["fizz"]) * (target // 3 + 1)
+    buzzes = [""] + ([""] * 4 + ["buzz"]) * (target // 5 + 1)
+    return ((fizzes[num] + buzzes[num]) or str(num) for num in range(1, target + 1))
