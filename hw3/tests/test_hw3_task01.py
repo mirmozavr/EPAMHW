@@ -1,4 +1,8 @@
-from hw3.hw3_task01 import TestPlug, cache_factory
+from hw3.hw3_task01 import cache_factory
+
+
+class TestPlug:
+    """Test plug for class object."""
 
 
 @cache_factory(times=2)

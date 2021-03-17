@@ -28,16 +28,9 @@ def f():
 """
 import pickle  # noqa: S403
 from typing import Any, Callable
-from unittest.mock import MagicMock
+from unittest.mock import Mock
 
-
-class TestPlug:
-    """Test plug for class object."""
-
-    pass
-
-
-mocker = MagicMock()
+mocker = Mock()
 
 
 def cache_factory(times: int = 3) -> Callable:
