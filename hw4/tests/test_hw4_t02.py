@@ -1,5 +1,7 @@
 from unittest.mock import patch
 
+import pytest
+
 from hw4.hw4_t02 import count_dots_on_i
 
 
@@ -29,3 +31,8 @@ def test_count_dots_on_i_mixed_symbol_string(m_get_url_return_str):
 @patch("hw4.hw4_t02.get_url_return_str", return_value="IIIIIIII")
 def test_count_dots_on_i_capital_i_symbols(m_get_url_return_str):
     assert count_dots_on_i("any.url.com") == 0
+
+
+def test_count_dots_on_i_url_is_unavailable():
+    with pytest.raises(ValueError, match="Unreachable unavailable.url.com"):
+        count_dots_on_i("unavailable.url.com")
