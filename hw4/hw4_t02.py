@@ -26,7 +26,6 @@ You will learn:
 
 * https://docs.python.org/3/library/urllib.request.html#urllib.request.urlopen
 """
-from unittest.mock import Mock
 from urllib.request import urlopen
 
 
@@ -40,7 +39,3 @@ def get_url_return_str(url: str) -> str:
 
 def count_dots_on_i(url: str) -> int:
     return get_url_return_str(url).count("i")
-
-
-get_url_return_str = Mock()  # noqa: F811
-get_url_return_str.return_value = "22 i symbols in total iiiiiiiiiiiiiiiiiiii"
