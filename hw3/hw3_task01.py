@@ -28,24 +28,31 @@ def f():
 """
 import pickle  # noqa: S403
 from typing import Any, Callable
-from unittest.mock import Mock
-
-mocker = Mock()
 
 
 def cache_factory(times: int = 3) -> Callable:
+    """Cache funcgion.
+
+    Returns a calculated result of a function once, then returns values from
+    cache given amount of times.
+    """
+    times_counter = times
+
     def cache(func: Callable) -> Callable:
         cache_db = {}
 
         def wrapper(*args: Any) -> Any:
-            if mocker.call_count > times:
-                mocker.reset_mock()
+            nonlocal times_counter
+            if times_counter == 0:
                 cache_db.clear()
+                times_counter = times
+
             pickle_dump = pickle.dumps(args)
+
             if pickle_dump not in cache_db:
                 cache_db[pickle_dump] = func(*args)
-
-            mocker()
+            else:
+                times_counter -= 1
             return cache_db[pickle_dump]
 
         return wrapper
