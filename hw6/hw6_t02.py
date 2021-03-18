@@ -75,10 +75,10 @@ class Person:
 class Student(Person):
     """Student class."""
 
-    def do_homework(self, homework: Homework) -> Any:
+    def do_homework(self, homework: Homework, solution: Any) -> Any:
         """Check if not late for homework."""
         if homework.is_active():
-            return homework
+            return HomeworkResult(self, homework, solution)
         raise DeadlineError("You are late")
 
 
