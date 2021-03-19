@@ -44,7 +44,7 @@ PEP8 соблюдать строго.
 
 import datetime
 from collections import defaultdict
-from typing import Any
+from typing import Any, Optional, Union
 
 
 class Homework:
@@ -75,24 +75,25 @@ class Person:
 class Student(Person):
     """Student class."""
 
-    def do_homework(self, homework: Homework, solution: Any) -> Any:
+    def do_homework(self, homework: Homework, solution: Union[str, int]) -> Any:
         """Check if not late for homework."""
         if homework.is_active():
             return HomeworkResult(self, homework, solution)
-        raise DeadlineError("You are late")
+        else:
+            raise DeadlineError("You are late")
 
 
 class HomeworkResult:
     """HomeworkResult class."""
 
-    def __init__(self, author: Student, homework: Homework, solution: Any):
+    def __init__(self, author: Student, homework: Homework, solution: Union[str, int]):
         self.author = author
         self.solution = str(solution)
         self.created = datetime.datetime.now()
         if isinstance(homework, Homework):
             self.homework = homework
         else:
-            raise ValueError("You gave a not Homework object")
+            raise ValueError("You gave not a Homework object")
 
 
 class Teacher(Person):
@@ -107,11 +108,11 @@ class Teacher(Person):
     def check_homework(self, hw_result: HomeworkResult) -> bool:
         """Check if homework is done."""
         if len(hw_result.solution) > 5:
-            Teacher.homework_done[hw_result.homework].add(hw_result.solution)
+            Teacher.homework_done[hw_result.homework].add(hw_result)
             return True
         return False
 
-    def reset_results(self, reset_hw: Homework = None) -> None:
+    def reset_results(self, reset_hw: Optional[Homework] = None) -> None:
         """Reset all or selected Homework results."""
         if reset_hw is None:
             Teacher.homework_done.clear()
