@@ -6,7 +6,7 @@ def test_with_number():
     def func(a, b):
         return (a ** b) ** 2
 
-    val_1 = func(5)
-    val_2 = func(5)
-    val_3 = func(5)
+    val_1 = func(5, 2)
+    val_2 = func(5, 2)
+    val_3 = func(5, 2)
     assert val_1 == val_2 == val_3
