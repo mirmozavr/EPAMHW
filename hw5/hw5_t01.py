@@ -13,7 +13,7 @@
     дней на выполнение
     created - c точной датой и временем создания
 Методы:
-    is_active - проверяет не истело ли время на выполнение задания,
+    is_active - проверяет не истекло ли время на выполнение задания,
     возвращает boolean
 
 2. Student
@@ -39,15 +39,15 @@ PEP8 соблюдать строго.
 давать логичные подходящие имена.
 """
 import datetime
-from typing import Any
+from typing import Optional
 
 
 class Homework:
     """Homework class."""
 
-    def __init__(self, text: str, deadline: int):
+    def __init__(self, text: str, deadline_days: int):
         self.text = text
-        self.deadline = datetime.timedelta(deadline)
+        self.deadline = datetime.timedelta(deadline_days)
         self.created = datetime.datetime.today()
 
     def is_active(self) -> bool:
@@ -62,7 +62,7 @@ class Student:
         self.last_name = last_name
         self.first_name = first_name
 
-    def do_homework(self, homework: Homework) -> Any:
+    def do_homework(self, homework: Homework) -> Optional[Homework]:
         """Check if not late for homework."""
         if homework.is_active():
             return homework
