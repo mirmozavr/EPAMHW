@@ -18,7 +18,7 @@ def test_attributes_of_student_class():
 def test_attributes_of_homework_class():
     homework = Homework("Tasks", 3)
     assert homework.text == "Tasks"
-    assert homework.deadline == 3
+    assert homework.deadline == datetime.timedelta(3)
 
 
 def test_homework_is_not_active_return_false():
