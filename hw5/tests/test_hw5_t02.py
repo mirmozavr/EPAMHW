@@ -16,6 +16,8 @@ def test_text_arguments():
 
 
 def test_saved_function_is_original_function():
-    foo = Mock(__name__="")
-    custom_f = print_result(foo)
-    assert custom_f.__original_func is foo
+    foo = Mock(__name__="function name", __doc__="function docstring")
+    custom_foo = print_result(foo)
+    assert custom_foo.__original_func is foo
+    assert custom_foo.__name__ == foo.__name__
+    assert custom_foo.__doc__ == foo.__doc__

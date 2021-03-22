@@ -22,16 +22,24 @@ from typing import Any, Callable
 
 
 def print_result(func: Callable) -> Callable:
-    # Place for new decorator
+    @save_info(func)
     def wrapper(*args: Any, **kwargs: Any) -> Any:
         """Function-wrapper which print result of an original function."""
         result = func(*args, **kwargs)
         print(result)  # noqa: T001
         return result
 
-    wrapper.__doc__ = func.__doc__
-    wrapper.__name__ = func.__name__
-    wrapper.__original_func = func
+    return wrapper
+
+
+def save_info(foo: Callable) -> Callable:  # take parent function as an argument
+    def wrapper(inner: Callable) -> Callable:
+        # change attributes of decorated (inner) function
+        inner.__doc__ = foo.__doc__
+        inner.__name__ = foo.__name__
+        inner.__original_func = foo
+        return inner
+
     return wrapper
 
 
