@@ -2,6 +2,7 @@
 ignore = E203, E501, W503,  # handled by black
          ANN101, ANN204,
          D100,
+         D101,
          D103,
          D104,  # no docstring in public package
          D200,  # One-line docstring should fit on one line with quotes

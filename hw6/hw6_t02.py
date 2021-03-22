@@ -1,6 +1,5 @@
 """
-В этом задании будем улучшать нашу систему классов из задания прошлой лекции.
-
+В этом задании будем улучшать нашу систему классов из задания прошлой лекции
 (Student, Teacher, Homework)
 Советую обратить внимание на defaultdict из модуля collection для
 использования как общую переменную
@@ -48,8 +47,6 @@ from typing import Any, Optional, Union
 
 
 class Homework:
-    """Homework class."""
-
     def __init__(self, text: str, deadline: int):
         self.text = text
         self.deadline = datetime.timedelta(deadline)
@@ -61,20 +58,20 @@ class Homework:
 
 
 class DeadlineError(Exception):
-    """Custom exception class."""
+    ...
+
+
+class NotAHomework(Exception):
+    ...
 
 
 class Person:
-    """Person class."""
-
     def __init__(self, last_name: str, first_name: str):
         self.last_name = last_name
         self.first_name = first_name
 
 
 class Student(Person):
-    """Student class."""
-
     def do_homework(self, homework: Homework, solution: Union[str, int]) -> Any:
         """Check if not late for homework."""
         if homework.is_active():
@@ -84,8 +81,6 @@ class Student(Person):
 
 
 class HomeworkResult:
-    """HomeworkResult class."""
-
     def __init__(self, author: Student, homework: Homework, solution: Union[str, int]):
         self.author = author
         self.solution = str(solution)
@@ -93,11 +88,10 @@ class HomeworkResult:
         if isinstance(homework, Homework):
             self.homework = homework
         else:
-            raise ValueError("You gave not a Homework object")
+            raise NotAHomework("You gave not a Homework object")
 
 
 class Teacher(Person):
-    """Teacher class."""
 
     homework_done = defaultdict(set)
 
