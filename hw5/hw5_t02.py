@@ -17,12 +17,11 @@ print(custom_sum.__name__)  # 'custom_sum'
 print(custom_sum.__original_func)  # <function custom_sum at <some_id>>
 """
 
-import functools
 from typing import Any, Callable
 
 
 def print_result(func: Callable) -> Callable:
-    @save_info(func)
+    @replace_attributes_from_given_function(func)
     def wrapper(*args: Any, **kwargs: Any) -> Any:
         """Function-wrapper which print result of an original function."""
         result = func(*args, **kwargs)
@@ -32,18 +31,11 @@ def print_result(func: Callable) -> Callable:
     return wrapper
 
 
-def save_info(foo: Callable) -> Callable:  # take parent function as an argument
+def replace_attributes_from_given_function(function: Callable) -> Callable:
     def wrapper(inner: Callable) -> Callable:
-        # change attributes of decorated (inner) function
-        inner.__doc__ = foo.__doc__
-        inner.__name__ = foo.__name__
-        inner.__original_func = foo
+        inner.__doc__ = function.__doc__
+        inner.__name__ = function.__name__
+        inner.__original_func = function
         return inner
 
     return wrapper
-
-
-@print_result
-def custom_sum(*args: Any) -> Any:
-    """This function can sum any objects which have __add___."""  # noqa: D401
-    return functools.reduce(lambda x, y: x + y, args)

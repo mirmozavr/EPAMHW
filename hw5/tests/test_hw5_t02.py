@@ -1,6 +1,13 @@
+import functools
 from unittest.mock import Mock
 
-from hw5.hw5_t02 import custom_sum, print_result
+from hw5.hw5_t02 import print_result
+
+
+@print_result
+def custom_sum(*args):
+    """This function can sum any objects which have __add___."""  # noqa: D401
+    return functools.reduce(lambda x, y: x + y, args)
 
 
 def test_tuple_of_integers():
@@ -16,8 +23,8 @@ def test_text_arguments():
 
 
 def test_saved_function_is_original_function():
-    foo = Mock(__name__="function name", __doc__="function docstring")
-    custom_foo = print_result(foo)
-    assert custom_foo.__original_func is foo
-    assert custom_foo.__name__ == foo.__name__
-    assert custom_foo.__doc__ == foo.__doc__
+    func = Mock(__name__="function name", __doc__="function docstring")
+    custom_func = print_result(func)
+    assert custom_func.__original_func is func
+    assert custom_func.__name__ == func.__name__
+    assert custom_func.__doc__ == func.__doc__
