@@ -12,24 +12,19 @@ reset_instances_counter - сбросить счетчик экземпляров
 
 
 def instances_counter(cls):  # noqa: ANN001,ANN002,ANN201
-    class NewClass:
-        count = 0
+    class NewClass(cls):
+        __count = 0
 
         def __init__(self, *args, **kwargs):  # noqa: ANN001,ANN002,ANN003
-            cls.__init__(self, *args, **kwargs)
-            NewClass.count += 1
+            super().__init__(*args, **kwargs)
+            NewClass.__count += 1
 
         def get_created_instances(self) -> int:
-            return NewClass.count
+            return NewClass.__count
 
         def reset_instances_counter(self) -> int:
-            temp = NewClass.count
-            NewClass.count = 0
+            temp = NewClass.__count
+            NewClass.__count = 0
             return temp  # noqa: R504
 
     return NewClass
-
-
-@instances_counter
-class User:
-    """Pass."""
