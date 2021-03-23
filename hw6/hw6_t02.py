@@ -61,10 +61,6 @@ class DeadlineError(Exception):
     ...
 
 
-class NotAHomework(Exception):
-    ...
-
-
 class Person:
     def __init__(self, last_name: str, first_name: str):
         self.last_name = last_name
@@ -88,7 +84,7 @@ class HomeworkResult:
         if isinstance(homework, Homework):
             self.homework = homework
         else:
-            raise NotAHomework("You gave not a Homework object")
+            raise TypeError("Not a Homework object")
 
 
 class Teacher(Person):

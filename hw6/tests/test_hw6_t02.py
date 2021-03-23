@@ -3,14 +3,7 @@ from unittest.mock import Mock
 
 import pytest
 
-from hw6.hw6_t02 import (
-    DeadlineError,
-    Homework,
-    HomeworkResult,
-    NotAHomework,
-    Student,
-    Teacher,
-)
+from hw6.hw6_t02 import DeadlineError, Homework, HomeworkResult, Student, Teacher
 
 
 def test_attributes_of_teacher_class():
@@ -133,5 +126,5 @@ def test_reset_selected_results_from_homework_dictionary():
 
 
 def test_homework_result_reject_invalid_homework():
-    with pytest.raises(NotAHomework, match="You gave not a Homework object"):
+    with pytest.raises(TypeError, match="Not a Homework object"):
         HomeworkResult("author", "invalid homework", "solution")
