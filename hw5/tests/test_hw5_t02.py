@@ -26,5 +26,5 @@ def test_saved_function_is_original_function():
     func = Mock(__name__="function name", __doc__="function docstring")
     custom_func = print_result(func)
     assert custom_func.__original_func is func
-    assert custom_func.__name__ == func.__name__
-    assert custom_func.__doc__ == func.__doc__
+    assert custom_func.__name__ == "function name"
+    assert custom_func.__doc__ == "function docstring"
