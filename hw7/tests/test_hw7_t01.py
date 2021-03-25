@@ -31,3 +31,13 @@ def test_nested_dicts_and_lists():
         "fourth": "RED",
     }
     assert find_occurrences(tree, "RED") == 9
+
+
+def test_search_a_list_in_a_tree():
+    tree = {
+        "hit": [10, 20],
+        "nested list": ["element", 123, [10, 20]],
+        "nested dict": {"nested key": [10, 20]},
+        "look alike": [10, 20, 10, 20],
+    }
+    assert find_occurrences(tree, [10, 20]) == 3
