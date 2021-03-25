@@ -20,16 +20,11 @@ from typing import List, Optional
 
 
 def check_row_win(board: List[List]) -> Optional[str]:
-    finished = True
-    for row in range(3):
-        if board[row].count("-") > 0:
-            finished = False
-        elif board[row].count("x") == 3:
+    for row in range(3):  # noqa: R503
+        if board[row].count("x") == 3:
             return "x wins!"
         elif board[row].count("o") == 3:
             return "o wins!"
-    if not finished:  # noqa: R503
-        return "unfinished"
 
 
 def check_column_win(board: List[List]) -> Optional[str]:
@@ -51,20 +46,17 @@ def check_diagonal_win(board: List[List]) -> Optional[str]:
         return "o wins!"
 
 
+def check_unfinished_or_draw(board: List[List]) -> str:
+    for row in range(3):
+        if "-" in board[row]:
+            return "unfinished"
+    return "draw!"
+
+
 def tic_tac_toe_checker(board: List[List]) -> str:
-    finished = True
-    row_check_result = check_row_win(board)
-    if row_check_result == "unfinished":
-        finished = False
-    elif row_check_result:
-        return row_check_result
-
-    column_check_result = check_column_win(board)
-    if column_check_result:
-        return column_check_result
-
-    diagonal_check_result = check_diagonal_win(board)
-    if diagonal_check_result:
-        return diagonal_check_result
-
-    return "draw!" if finished else "unfinished"
+    return (
+        check_row_win(board)
+        or check_column_win(board)
+        or check_diagonal_win(board)
+        or check_unfinished_or_draw(board)
+    )
