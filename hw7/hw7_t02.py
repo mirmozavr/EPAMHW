@@ -23,13 +23,13 @@ Examples:
 
 
 def backspace_word_constructor(sequence: str) -> str:
-    skeleton = []
+    stack = []
     for char in sequence:
         if char != "#":
-            skeleton.append(char)
-        elif skeleton:
-            skeleton.pop()
-    return "".join(skeleton)
+            stack.append(char)
+        elif stack:
+            stack.pop()
+    return "".join(stack)
 
 
 def backspace_compare(first: str, second: str) -> bool:
