@@ -128,3 +128,16 @@ def test_reset_selected_results_from_homework_dictionary():
 def test_homework_result_reject_invalid_homework():
     with pytest.raises(TypeError, match="Not a Homework object"):
         HomeworkResult("author", "invalid homework", "solution")
+
+
+def test_no_repetitive_homework_results_in_homework_done():
+    teacher = Teacher("Smith", "Adam")
+    homework = Homework("Task", 3)
+    student = Student("Doe", "John")
+    teacher.reset_results()
+    homework_result = student.do_homework(homework, "Solution")
+
+    teacher.check_homework(homework_result)
+    teacher.check_homework(homework_result)
+    teacher.check_homework(homework_result)
+    assert teacher.homework_done == {homework: {homework_result}}
