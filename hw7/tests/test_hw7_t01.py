@@ -41,3 +41,29 @@ def test_search_a_list_in_a_tree():
         "look alike": [10, 20, 10, 20],
     }
     assert find_occurrences(tree, [10, 20]) == 3
+
+
+def test_nested_sets_and_tuples():
+    tree = {
+        "tuple": ("RED", "BLUE"),
+        "dictionary": {
+            "nested set": {
+                "simple",
+                "set",
+                "of",
+                "RED",
+                "values",
+                ("nested_tuple", "RED", "BLUE", "RED", "RED"),
+            },
+        },
+        "another dictionary": {
+            "abc": "BLUE",
+            "jhl": {"RED"},
+            "complex": {
+                "key1": "value1",
+                "key2": "RED",
+                "set": {"a", "lot", "of", "values"},
+            },
+        },
+    }
+    assert find_occurrences(tree, "RED") == 7

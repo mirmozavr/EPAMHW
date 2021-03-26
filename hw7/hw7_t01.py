@@ -10,26 +10,26 @@ Tree can only contains basic structures like:
 from typing import Any
 
 
-def parse_list(parsed_list: list, element: Any) -> int:
+def parse_collection(parsed_collection: list, element: Any) -> int:
     counter = 0
-    for val in parsed_list:
-        if val == element:
+    for value in parsed_collection:
+        if value == element:
             counter += 1
-        elif isinstance(val, dict):
-            counter += find_occurrences(val, element)
-        elif isinstance(val, list):
-            counter += parse_list(val, element)
+        elif isinstance(value, dict):
+            counter += find_occurrences(value, element)
+        elif isinstance(value, (list, set, tuple)):
+            counter += parse_collection(value, element)
     return counter
 
 
 def find_occurrences(tree: dict, element: Any) -> int:
     counter = 0
-    for val in tree.values():
-        if val == element:
+    for value in tree.values():
+        if value == element:
             counter += 1
-        elif isinstance(val, dict):
-            counter += find_occurrences(val, element)
-        elif isinstance(val, list):
-            counter += parse_list(val, element)
+        elif isinstance(value, dict):
+            counter += find_occurrences(value, element)
+        elif isinstance(value, (list, set, tuple)):
+            counter += parse_collection(value, element)
 
     return counter
