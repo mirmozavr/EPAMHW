@@ -87,6 +87,20 @@ class HomeworkResult:
         else:
             raise TypeError("Not a Homework object")
 
+    def __eq__(self, other: Any):
+        if isinstance(other, HomeworkResult):
+            return (
+                self.author,
+                self.homework,
+                self.solution == other.author,
+                other.homework,
+                other.solution,
+            )
+        return NotImplemented
+
+    def __hash__(self):
+        return hash((self.author, self.homework, self.solution))
+
 
 class Teacher(Person):
 
