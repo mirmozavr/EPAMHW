@@ -67,3 +67,27 @@ def test_nested_sets_and_tuples():
         },
     }
     assert find_occurrences(tree, "RED") == 7
+
+
+def test_search_a_single_char_parse_strings():
+    tree = {
+        "tuple": ("RED", "A"),
+        "dictionary": {
+            "nested set": {
+                "simple",
+                "set",
+                "A",
+                "RED",
+                ("nested_tuple", "A", "BLUE", "RED", "RED"),
+            },
+        },
+        "another dictionary": {
+            "abc": "blueA",
+            "jhl": {"A"},
+            "complex": {
+                "key1": "value1",
+                "set": {"aaaaaa", "lot", "of", "BAAAAAB"},
+            },
+        },
+    }
+    assert find_occurrences(tree, "A") == 10
