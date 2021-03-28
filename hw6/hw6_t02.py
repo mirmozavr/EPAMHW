@@ -99,7 +99,14 @@ class HomeworkResult:
         return NotImplemented
 
     def __hash__(self):
-        return hash((self.author, self.homework, self.solution))
+        return hash(
+            (
+                self.author.last_name,
+                self.author.first_name,
+                self.homework,
+                self.solution,
+            )
+        )
 
 
 class Teacher(Person):
