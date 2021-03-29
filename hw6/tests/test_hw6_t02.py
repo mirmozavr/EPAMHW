@@ -138,14 +138,17 @@ def test_no_repetitive_homework_results_in_homework_done():
 
     teacher.check_homework(student.do_homework(homework, "Solution"))
     teacher.check_homework(student.do_homework(homework, "Solution"))
-    teacher.check_homework(student.do_homework(homework, "Solution"))
 
-    teacher.check_homework(Student("Doe", "Jane").do_homework(homework, "Solution"))
-    teacher.check_homework(Student("Doe", "Jane").do_homework(homework, "Solution"))
-    teacher.check_homework(Student("Doe", "Jane").do_homework(homework, "Solution"))
+    teacher.check_homework(
+        Student("Doe", "Jane").do_homework(Homework("Task", 3), "Solution")
+    )
+    teacher.check_homework(
+        Student("Doe", "Jane").do_homework(Homework("Task", 3), "Solution")
+    )
+
     assert teacher.homework_done == {
         homework: {
             student.do_homework(homework, "Solution"),
-            Student("Doe", "Jane").do_homework(homework, "Solution"),
+            Student("Doe", "Jane").do_homework(Homework("Task", 3), "Solution"),
         }
     }

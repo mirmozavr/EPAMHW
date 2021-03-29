@@ -57,6 +57,12 @@ class Homework:
         """Check if homework is still active."""
         return datetime.datetime.today() < self.created + self.deadline
 
+    def __eq__(self, other):  # noqa: ANN001
+        return self.text, self.deadline == other.text, other.deadline
+
+    def __hash__(self):
+        return hash((self.text, self.deadline))
+
 
 class DeadlineError(Exception):
     ...
@@ -66,6 +72,12 @@ class Person:
     def __init__(self, last_name: str, first_name: str):
         self.last_name = last_name
         self.first_name = first_name
+
+    def __eq__(self, other):  # noqa: ANN001
+        return self.first_name, self.last_name == other.first_name, other.last_name
+
+    def __hash__(self):
+        return hash((self.first_name, self.last_name))
 
 
 class Student(Person):
@@ -88,15 +100,15 @@ class HomeworkResult:
             raise TypeError("Not a Homework object")
 
     def __eq__(self, other: Any):
-        if isinstance(other, HomeworkResult):
-            return (
-                self.author,
-                self.homework,
-                self.solution == other.author,
-                other.homework,
-                other.solution,
-            )
-        return NotImplemented
+        return (
+            self.author.last_name,
+            self.author.first_name,
+            self.homework,
+            self.solution == other.author.last_name,
+            other.author.first_name,
+            other.homework,
+            other.solution,
+        )
 
     def __hash__(self):
         return hash(
