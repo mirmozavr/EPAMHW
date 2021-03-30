@@ -26,7 +26,7 @@ In case of attribute clash existing built-in attributes take precedence.
 class KeyValueStorage:  # noqa: D101
     def __init__(self, path: str):
         with open(path, "r") as file:
-            existing_builtins = KeyValueStorage.__dict__.keys()
+            existing_builtins = frozenset(KeyValueStorage.__dict__.keys())
             for item in file.read().split():
                 key, value = item.split("=", maxsplit=1)
                 if key not in existing_builtins:
