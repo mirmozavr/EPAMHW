@@ -31,7 +31,7 @@ class TableData:
         self.db_path = db_path
         self.table_name = (table_name,)
 
-    def connect_and_return_cursor(self) -> sqlite3.connect().cursor:  # noqa: D102
+    def connect_and_return_cursor(self):  # noqa: D102,ANN201
         connection = sqlite3.connect(self.db_path)
         return connection.cursor()
 
