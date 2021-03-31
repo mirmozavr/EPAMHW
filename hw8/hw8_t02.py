@@ -33,6 +33,7 @@ class TableData:
 
     def connect_and_return_cursor(self):  # noqa: D102,ANN201
         connection = sqlite3.connect(self.db_path)
+        connection.row_factory = sqlite3.Row
         return connection.cursor()
 
     def __len__(self):
@@ -45,7 +46,7 @@ class TableData:
         for row in self.cursor.execute(
             f"SELECT * FROM {self.table_name[0]}"  # noqa: S608
         ):  # noqa: S608
-            yield {"name": row[0], "age": row[1], "country": row[2]}
+            yield row
 
     def __getitem__(self, item: str):
         item = (item,)
@@ -53,7 +54,7 @@ class TableData:
         self.cursor.execute(
             f"SELECT * FROM {self.table_name[0]} WHERE name = '{item[0]}'"  # noqa: S608
         )
-        return self.cursor.fetchone()
+        return tuple(self.cursor.fetchone())
 
     def __contains__(self, item: str):
         item = (item,)
