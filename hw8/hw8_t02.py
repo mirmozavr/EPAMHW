@@ -31,26 +31,27 @@ class TableData:
         self.db_path = db_path
         self.table_name = (table_name,)
 
-    def connect_and_return_cursor(self):  # noqa: D102,ANN201
-        connection = sqlite3.connect(self.db_path)
-        connection.row_factory = sqlite3.Row
-        return connection.cursor()
+    def __enter__(self):
+        self.connection = sqlite3.connect(self.db_path)
+        self.connection.row_factory = sqlite3.Row
+        self.cursor = self.connection.cursor()
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):  # noqa: ANN001
+        self.connection.cursor().close()
+        self.connection.close()
 
     def __len__(self):
-        self.cursor = self.connect_and_return_cursor()
         self.cursor.execute(f"SELECT count(*) FROM {self.table_name[0]}")  # noqa: S608
         return self.cursor.fetchone()[0]
 
     def __iter__(self):
-        self.cursor = self.connect_and_return_cursor()
-        for row in self.cursor.execute(
+        yield from self.cursor.execute(
             f"SELECT * FROM {self.table_name[0]}"  # noqa: S608
-        ):  # noqa: S608
-            yield row
+        )  # noqa: S608
 
     def __getitem__(self, item: str):
         item = (item,)
-        self.cursor = self.connect_and_return_cursor()
         self.cursor.execute(
             f"SELECT * FROM {self.table_name[0]} WHERE name = '{item[0]}'"  # noqa: S608
         )
@@ -58,7 +59,6 @@ class TableData:
 
     def __contains__(self, item: str):
         item = (item,)
-        self.cursor = self.connect_and_return_cursor()
         self.cursor.execute(
             f"SELECT count(*) FROM {self.table_name[0]} WHERE name = '{item[0]}'"  # noqa: S608
         )
