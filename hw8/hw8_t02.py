@@ -62,3 +62,7 @@ class TableData:
             (item,),
         )
         return self.cursor.fetchone()[0] > 0
+
+    def close(self) -> None:
+        self.connection.cursor().close()
+        self.connection.close()

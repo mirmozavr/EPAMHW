@@ -36,17 +36,20 @@ def test_context_manager_table_data_is_iterable_by_rows():
 def test_table_data_length():
     presidents = TableData(db_path, "presidents")
     assert len(presidents) == 3
+    presidents.close()
 
 
 def test_table_data_contains():
     presidents = TableData(db_path, "presidents")
     assert "Trump" in presidents
     assert "Lincoln" not in presidents
+    presidents.close()
 
 
 def test_table_data_get_item():
     presidents = TableData(db_path, "presidents")
     assert presidents["Trump"] == ("Trump", 1337, "US")
+    presidents.close()
 
 
 def test_table_data_is_iterable_by_rows():
@@ -59,3 +62,4 @@ def test_table_data_is_iterable_by_rows():
     assert names == ["Yeltsin", "Trump", "Big Man Tyrone"]
     assert ages == [999, 1337, 101]
     assert countries == ["Russia", "US", "Kekistan"]
+    presidents.close()
