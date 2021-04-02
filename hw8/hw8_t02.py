@@ -29,12 +29,12 @@ import sqlite3
 class TableData:
     def __init__(self, db_path: str, table_name: str):
         self.db_path = db_path
-        self.table_name = (table_name,)
-
-    def __enter__(self):
+        self.table_name = table_name
         self.connection = sqlite3.connect(self.db_path)
         self.connection.row_factory = sqlite3.Row
         self.cursor = self.connection.cursor()
+
+    def __enter__(self):
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):  # noqa: ANN001
@@ -42,24 +42,23 @@ class TableData:
         self.connection.close()
 
     def __len__(self):
-        self.cursor.execute(f"SELECT count(*) FROM {self.table_name[0]}")  # noqa: S608
+        self.cursor.execute(f"SELECT count(*) FROM {self.table_name}")  # noqa: S608
         return self.cursor.fetchone()[0]
 
     def __iter__(self):
         yield from self.cursor.execute(
-            f"SELECT * FROM {self.table_name[0]}"  # noqa: S608
+            f"SELECT * FROM {self.table_name}"  # noqa: S608
         )  # noqa: S608
 
     def __getitem__(self, item: str):
-        item = (item,)
         self.cursor.execute(
-            f"SELECT * FROM {self.table_name[0]} WHERE name = '{item[0]}'"  # noqa: S608
+            f"SELECT * FROM {self.table_name} WHERE name = ?", (item,)  # noqa: S608
         )
         return tuple(self.cursor.fetchone())
 
     def __contains__(self, item: str):
-        item = (item,)
         self.cursor.execute(
-            f"SELECT count(*) FROM {self.table_name[0]} WHERE name = '{item[0]}'"  # noqa: S608
+            f"SELECT count(*) FROM {self.table_name} WHERE name = ?",  # noqa: S608
+            (item,),
         )
         return self.cursor.fetchone()[0] > 0
