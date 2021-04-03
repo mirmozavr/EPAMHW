@@ -12,20 +12,37 @@ file2.txt:
 list(merge_sorted_files(["file1.txt", "file2.txt"]))
 [1, 2, 3, 4, 5, 6]
 """
+from collections import deque
 from pathlib import Path
 from typing import Iterator, List, Union
 
 
-def open_file_return_map(path: Union[Path, str]) -> map:
+def open_file_return_list(path: Union[Path, str]) -> list:
     with open(path, "r") as file:
-        return map(int, file.read().split())
+        return list(map(int, file.read().split()))
+
+
+def merge_2_sorted_lists(first: list, second: list) -> list:
+    i = k = 0
+    result = []
+    while i < len(first) and k < len(second):
+        if first[i] <= second[k]:
+            result.append(first[i])
+            i += 1
+        else:
+            result.append(second[k])
+            k += 1
+
+    result.extend(first[i:])
+    result.extend(second[k:])
+
+    return result
 
 
 def merge_sorted_files(file_list: List[Union[Path, str]]) -> Iterator:
-    result = []
+    queue = deque(map(open_file_return_list, file_list))
 
-    for obj in map(open_file_return_map, file_list):
-        result.extend(obj)
-    result.sort()
+    while len(queue) > 1:
+        queue.appendleft(merge_2_sorted_lists(queue.pop(), queue.pop()))
 
-    return iter(result)
+    return iter(queue.pop())
