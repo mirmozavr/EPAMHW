@@ -14,7 +14,7 @@ def test_count_words_in_txt():
 
 
 def test_count_lines_in_py():
-    assert universal_file_counter(base_dir, "py") == 24
+    assert universal_file_counter(base_dir, "py") == 25
 
 
 def test_count_words_in_rst():
