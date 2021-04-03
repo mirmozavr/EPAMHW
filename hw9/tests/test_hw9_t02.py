@@ -2,38 +2,27 @@ import pytest
 
 from hw9.hw9_t02 import Suppressor, suppressor
 
+test_subjects = [Suppressor, suppressor]
 
-def test_class_context_manager_positive_suppress_index_error():
-    with Suppressor(IndexError):
+
+@pytest.fixture(params=test_subjects, ids=[subj.__name__ for subj in test_subjects])
+def function(request):
+    return request.param
+
+
+def test_context_manager_positive_suppress_index_error(function):
+    with function(IndexError):
         [][1]
     assert True
 
 
-def test_class_context_manager_positive_suppress_key_error():
-    with Suppressor(KeyError):
+def test_context_manager_positive_suppress_key_error(function):
+    with function(KeyError):
         {"a": 1}["b"]
     assert True
 
 
-def test_class_context_manager_suppress_wrong_error_raise_value_error():
+def test_context_manager_suppress_wrong_error_raise_value_error(function):
     with pytest.raises(ValueError):  # noqa: PT011,PT012
-        with Suppressor(KeyError):
-            int("string")
-
-
-def test_generator_context_manager_positive_suppress_index_error():
-    with suppressor(IndexError):
-        [][1]
-    assert True
-
-
-def test_generator_context_manager_positive_suppress_key_error():
-    with suppressor(KeyError):
-        {"a": 1}["b"]
-    assert True
-
-
-def test_generator_context_manager_suppress_wrong_error_raise_value_error():
-    with pytest.raises(ValueError):  # noqa: PT011,PT012
-        with suppressor(KeyError):
+        with function(KeyError):
             int("string")
