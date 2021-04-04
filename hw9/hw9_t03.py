@@ -41,8 +41,9 @@ def universal_file_counter(
     ]
 
     for name in file_list:
+        file_path = "/".join((dir_path, name))
         if tokenizer is None:
-            counter += count_lines("/".join((dir_path, name)))
+            counter += count_lines(file_path)
         else:
-            counter += count_tokens("/".join((dir_path, name)), tokenizer)
+            counter += count_tokens(file_path, tokenizer)
     return counter

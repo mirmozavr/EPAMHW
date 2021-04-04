@@ -14,7 +14,7 @@ def test_count_words_in_txt():
 
 
 def test_count_lines_in_py():
-    assert universal_file_counter(base_dir, "py") == 25
+    assert universal_file_counter(base_dir, "py") == 29
 
 
 def test_count_words_in_rst():
@@ -23,3 +23,7 @@ def test_count_words_in_rst():
 
 def test_count_lines_in_jpg():
     assert universal_file_counter(base_dir, "jpg") == 0
+
+
+def test_count_chars_in_rst():
+    assert universal_file_counter(base_dir, "rst", str) == 46
