@@ -17,32 +17,51 @@ from pathlib import Path
 from typing import Iterator, List, Union
 
 
-def open_file_return_list(path: Union[Path, str]) -> list:
-    with open(path, "r") as file:
-        return list(map(int, file.read().split()))
+def open_file_return_iterator(path: Union[Path, str]) -> Iterator:
+    with open(path) as file:
+        yield from (int(row) for row in file)
 
 
-def merge_2_sorted_lists(first: list, second: list) -> list:
-    i = k = 0
+def merge_2_sorted_iterators(  # noqa: C901,CCR001
+    left: Iterator, right: Iterator
+) -> Iterator:
     result = []
-    while i < len(first) and k < len(second):
-        if first[i] <= second[k]:
-            result.append(first[i])
-            i += 1
+    try:
+        left_item = next(left)
+    except StopIteration:
+        result.extend(right)
+        return iter(result)
+
+    try:
+        right_item = next(right)
+    except StopIteration:
+        result.extend(left)
+        return iter(result)
+
+    while True:
+        if left_item <= right_item:
+            result.append(left_item)
+            try:
+                left_item = next(left)
+            except StopIteration:
+                result.append(right_item)
+                result.extend(right)
+                break
         else:
-            result.append(second[k])
-            k += 1
-
-    result.extend(first[i:])
-    result.extend(second[k:])
-
-    return result
+            result.append(right_item)
+            try:
+                right_item = next(right)
+            except StopIteration:
+                result.append(left_item)
+                result.extend(left)
+                break
+    return iter(result)
 
 
 def merge_sorted_files(file_list: List[Union[Path, str]]) -> Iterator:
-    queue = deque(map(open_file_return_list, file_list))
+    queue = deque(map(open_file_return_iterator, file_list))
 
     while len(queue) > 1:
-        queue.appendleft(merge_2_sorted_lists(queue.pop(), queue.pop()))
+        queue.appendleft(merge_2_sorted_iterators(queue.pop(), queue.pop()))
 
-    return iter(queue.pop())
+    return queue.pop()
