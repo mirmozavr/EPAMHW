@@ -22,7 +22,7 @@ def count_lines(file_path: Union[str, Path]) -> int:
     return line_counter
 
 
-def count_tokens(file_path: Union[str, Path], tokenizer: Callable) -> int:
+def count_tokens(file_path: Union[str, Path], tokenizer: Callable[[str], str]) -> int:
     token_counter = 0
     with open(file_path) as file:
         for _item in tokenizer(file.read()):
@@ -31,7 +31,9 @@ def count_tokens(file_path: Union[str, Path], tokenizer: Callable) -> int:
 
 
 def universal_file_counter(
-    dir_path: Path, file_extension: str, tokenizer: Optional[Callable] = None
+    dir_path: Path,
+    file_extension: str,
+    tokenizer: Optional[Callable[[str], str]] = None,
 ) -> int:
     counter = 0
     file_list = [
