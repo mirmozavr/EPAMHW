@@ -14,24 +14,22 @@ from pathlib import Path
 from typing import Callable, Optional, Union
 
 
-def count_lines(file_path: Union[str, Path]) -> int:
-    line_counter = 0
+def count_lines_or_tokens(
+    file_path: Union[str, Path], tokenizer: Optional[Callable[[str], str]] = None
+) -> int:
+    counter = 0
     with open(file_path) as file:
-        for _line in file:
-            line_counter += 1
-    return line_counter
-
-
-def count_tokens(file_path: Union[str, Path], tokenizer: Callable[[str], str]) -> int:
-    token_counter = 0
-    with open(file_path) as file:
-        for _item in tokenizer(file.read()):
-            token_counter += 1
-    return token_counter
+        if tokenizer:
+            for _item in tokenizer(file.read()):
+                counter += 1
+        else:
+            for _line in file:
+                counter += 1
+        return counter
 
 
 def universal_file_counter(
-    dir_path: Path,
+    dir_path: Union[str, Path],
     file_extension: str,
     tokenizer: Optional[Callable[[str], str]] = None,
 ) -> int:
@@ -42,8 +40,5 @@ def universal_file_counter(
 
     for name in file_list:
         file_path = "/".join((dir_path, name))
-        if tokenizer is None:
-            counter += count_lines(file_path)
-        else:
-            counter += count_tokens(file_path, tokenizer)
+        counter += count_lines_or_tokens(file_path, tokenizer)
     return counter

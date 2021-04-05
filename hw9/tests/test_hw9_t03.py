@@ -13,10 +13,6 @@ def test_count_words_in_txt():
     assert universal_file_counter(base_dir, "txt", str.split) == 17
 
 
-def test_count_lines_in_py():
-    assert universal_file_counter(base_dir, "py") == 29
-
-
 def test_count_words_in_rst():
     assert universal_file_counter(base_dir, "rst", str.split) == 7
 
