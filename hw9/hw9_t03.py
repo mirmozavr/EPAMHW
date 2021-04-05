@@ -19,12 +19,8 @@ def count_lines_or_tokens(
 ) -> int:
     counter = 0
     with open(file_path) as file:
-        if tokenizer:
-            for _item in tokenizer(file.read()):
-                counter += 1
-        else:
-            for _line in file:
-                counter += 1
+        for _item in tokenizer(file.read()) if tokenizer else file:
+            counter += 1
         return counter
 
 
