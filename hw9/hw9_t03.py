@@ -17,6 +17,7 @@ from typing import Callable, Optional, Union
 def count_lines_or_tokens(
     file_path: Union[str, Path], tokenizer: Callable[[str], str]
 ) -> int:
+    tokenizer = tokenizer or str.splitlines
     counter = 0
     with open(file_path) as file:
         for _item in tokenizer(file.read()):
@@ -27,7 +28,7 @@ def count_lines_or_tokens(
 def universal_file_counter(
     dir_path: Union[str, Path],
     file_extension: str,
-    tokenizer: Optional[Callable[[str], str]] = str.splitlines,
+    tokenizer: Optional[Callable[[str], str]] = None,
 ) -> int:
     counter = 0
     file_list = [
