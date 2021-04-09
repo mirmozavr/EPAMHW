@@ -28,14 +28,11 @@ https://markets.businessinsider.com/index/components/s&p_500
 ]
 """
 
-from bs4 import BeautifulSoup as BS
-from bs4 import SoupStrainer
-from urllib import request
-import aiohttp
-import re
-import aiohttp
 import asyncio
 import datetime as dt
+import re
+import aiohttp
+from bs4 import BeautifulSoup as BS
 
 sp_500_info = []
 
@@ -58,9 +55,7 @@ async def get_usd_currency_from_cbr(session):
 
 
 async def get_company_info(url, session, USD):
-    async with session.get(
-        url
-    ) as resp:
+    async with session.get(url) as resp:
         # print("Status:", resp.status)
         # print("Content-type:", resp.headers["content-type"])
         # print(resp.url)
@@ -68,7 +63,9 @@ async def get_company_info(url, session, USD):
         soup = BS(html, features="html.parser")
         label = str(soup.find("span", attrs={"class": "price-section__label"}).string)
         current_value = float(
-            soup.find("span", attrs={"class": "price-section__current-value"}).string.replace(",", "")
+            soup.find(
+                "span", attrs={"class": "price-section__current-value"}
+            ).string.replace(",", "")
         )
         code = list(
             soup.find("span", attrs={"class": "price-section__category"}).strings
@@ -95,7 +92,9 @@ async def get_company_info(url, session, USD):
             year_high = float(
                 list(
                     soup.find(
-                        "div", attrs={"class": "snapshot__header"}, string="52 Week High"
+                        "div",
+                        attrs={"class": "snapshot__header"},
+                        string="52 Week High",
                     ).parent.stripped_strings
                 )[0].replace(",", "")
             )
@@ -112,11 +111,10 @@ async def get_sp_500_info():
     base_company_url = "https://markets.businessinsider.com"
     async with aiohttp.ClientSession() as session:
 
-        USD = await get_usd_currency_from_cbr(session)
+        usd = await get_usd_currency_from_cbr(session)
 
-        for page in range(6, 7):  # extend to 12!!!
+        for page in range(1, 2):  # extend to 12!!!
             async with session.get(base_url, params=[("p", page)]) as resp:
-                only_a_tags = SoupStrainer("a")
 
                 # print("Status:", resp.status)
                 # print(resp.url)
@@ -139,19 +137,23 @@ async def get_sp_500_info():
                         "potential profit": None,
                     }
                     # print(item["href"], item["title"])
-                    growth = float(list(list(company.parent.next_siblings)[-4].children)[1].string.replace(",", ""))
+                    growth = float(
+                        list(list(company.parent.next_siblings)[-4].children)[
+                            -2
+                        ].string.rstrip("%")
+                    )
 
                     company_info["name"] = company["title"]
                     company_info["growth"] = growth
 
-                    URL = base_company_url + company["href"]
+                    url = base_company_url + company["href"]
 
                     (
                         company_info["code"],
                         company_info["price"],
                         company_info["P/E"],
                         company_info["potential profit"],
-                    ) = (await get_company_info(URL, session, USD))
+                    ) = await get_company_info(url, session, usd)
 
                     print(company_info)
                     sp_500_info.append(company_info)
