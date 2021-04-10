@@ -34,7 +34,21 @@ import re
 import aiohttp
 from bs4 import BeautifulSoup as BS
 
+INF = float("INF")
+NEG_INF = -float("INF")
+company_dummy = {
+                        "name": "Dummy",
+                        "code": "DMMY",
+                        "price": NEG_INF,
+                        "P/E": INF,
+                        "growth": NEG_INF,
+                        "potential profit": NEG_INF,
+                    }
 sp_500_info = []
+highest_price = [company_dummy] * 10
+lowest_pe = [company_dummy] * 10
+highest_growth = [company_dummy] * 10
+highest_potential_profit = [company_dummy] * 10
 
 
 async def get_usd_currency_from_cbr(session):
@@ -113,7 +127,7 @@ async def get_sp_500_info():
 
         usd = await get_usd_currency_from_cbr(session)
 
-        for page in range(1, 2):  # extend to 12!!!
+        for page in range(12):  # extend to 12!!!
             async with session.get(base_url, params=[("p", page)]) as resp:
 
                 # print("Status:", resp.status)
@@ -157,10 +171,35 @@ async def get_sp_500_info():
 
                     print(company_info)
                     sp_500_info.append(company_info)
+                    evaluate_top_10(company_info)
+
+
+def evaluate_top_10(company):
+    for i in range(10):
+        if company["price"] and company["price"] > highest_price[i]["price"]:
+            highest_price.insert(i, company)
+            highest_price.pop()
+            break
+    for i in range(10):
+        if company["P/E"] and company["P/E"] < lowest_pe[i]["P/E"]:
+            lowest_pe.insert(i, company)
+            lowest_pe.pop()
+            break
+    for i in range(10):
+        if company["growth"] and company["growth"] > highest_growth[i]["growth"]:
+            highest_growth.insert(i, company)
+            highest_growth.pop()
+            break
+    for i in range(10):
+        if company["potential profit"] and company["potential profit"] > highest_potential_profit[i]["potential profit"]:
+            highest_potential_profit.insert(i, company)
+            highest_potential_profit.pop()
+            break
 
 
 loop = asyncio.get_event_loop()
 loop.run_until_complete(get_sp_500_info())
 print("500 len", len(sp_500_info))
-for info in sp_500_info:
-    print(info)
+# for info in sp_500_info:
+#     print(info)
+print(highest_price, highest_growth, lowest_pe, highest_potential_profit, sep="\n\n")
