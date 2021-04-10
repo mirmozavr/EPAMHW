@@ -1,5 +1,6 @@
 """
-Ваша задача спарсить информацию о компаниях, находящихся в индексе S&P 500 с данного сайта:
+Ваша задача спарсить информацию о компаниях, находящихся в индексе S&P 500 с данного сайта.
+
 https://markets.businessinsider.com/index/components/s&p_500
 
 Для каждой компании собрать следующую информацию:
@@ -31,30 +32,78 @@ https://markets.businessinsider.com/index/components/s&p_500
 import asyncio
 import datetime as dt
 import re
+
 import aiohttp
-from bs4 import BeautifulSoup as BS
+from bs4 import BeautifulSoup
 
 INF = float("INF")
 NEG_INF = -float("INF")
 company_dummy = {
-                        "name": "Dummy",
-                        "code": "DMMY",
-                        "price": NEG_INF,
-                        "P/E": INF,
-                        "growth": NEG_INF,
-                        "potential profit": NEG_INF,
-                    }
-sp_500_info = []
+    "name": "Dummy",
+    "code": "DUMMY",
+    "price": NEG_INF,
+    "P/E": INF,
+    "growth": NEG_INF,
+    "potential profit": NEG_INF,
+}
 highest_price = [company_dummy] * 10
 lowest_pe = [company_dummy] * 10
 highest_growth = [company_dummy] * 10
 highest_potential_profit = [company_dummy] * 10
 
 
-async def get_usd_currency_from_cbr(session):
+async def get_sp_500_info() -> None:
+    base_url = "https://markets.businessinsider.com/index/components/s&p_500"
+    base_company_url = "https://markets.businessinsider.com"
+    async with aiohttp.ClientSession() as session:
+
+        usd = await get_usd_currency_from_cbr(session)
+
+        for page in range(1, 12):
+            async with session.get(base_url, params=[("p", page)]) as resp:
+
+                html = await resp.text()
+                soup = BeautifulSoup(html, features="html.parser")
+
+                stocks = soup.find_all(
+                    "a", span="", href=re.compile("stock$"), attrs={"title": True}
+                )
+
+                for company in stocks:
+                    growth = float(
+                        list(list(company.parent.next_siblings)[-4].children)[
+                            -2
+                        ].string.rstrip("%")
+                    )
+                    company_info = {
+                        "name": company["title"],
+                        "code": None,
+                        "price": None,
+                        "P/E": None,
+                        "growth": growth,
+                        "potential profit": None,
+                    }
+
+                    url = base_company_url + company["href"]
+
+                    (
+                        company_info["code"],
+                        company_info["price"],
+                        company_info["P/E"],
+                        company_info["potential profit"],
+                    ) = await get_company_info(url, session, usd)
+
+                    evaluate_top10(company_info)
+    write_into_files()
+
+
+async def get_usd_currency_from_cbr(session: aiohttp.ClientSession) -> float:
     today_date = dt.datetime.strftime(dt.datetime.today(), "%d/%m/%Y")
+    yesterday_date = dt.datetime.strftime(
+        dt.datetime.today() - dt.timedelta(days=1), "%d/%m/%Y"
+    )
     usd_params = {
-        "date_req1": today_date,
+        "date_req1": yesterday_date,
         "date_req2": today_date,
         "VAL_NM_RQ": "R01235",
     }
@@ -62,28 +111,27 @@ async def get_usd_currency_from_cbr(session):
         "http://www.cbr.ru/scripts/XML_dynamic.asp", params=usd_params
     ) as resp:
         html = await resp.text()
-        soup = BS(html, features="html.parser")
-        USD = float(soup.find("value").string.replace(",", "."))
-        print("Dollar", USD)
-        return USD
+        soup = BeautifulSoup(html, features="html.parser")
+        return float(soup.find_all("value")[-1].string.replace(",", "."))
 
 
-async def get_company_info(url, session, USD):
+async def get_company_info(
+    url: str, session: aiohttp.ClientSession, usd: float
+) -> tuple:
     async with session.get(url) as resp:
-        # print("Status:", resp.status)
-        # print("Content-type:", resp.headers["content-type"])
-        # print(resp.url)
         html = await resp.text()
-        soup = BS(html, features="html.parser")
-        label = str(soup.find("span", attrs={"class": "price-section__label"}).string)
+        soup = BeautifulSoup(html, features="html.parser")
+
         current_value = float(
             soup.find(
                 "span", attrs={"class": "price-section__current-value"}
             ).string.replace(",", "")
         )
+
         code = list(
             soup.find("span", attrs={"class": "price-section__category"}).strings
         )[-2].strip(", ")
+
         try:
             p_e = float(
                 list(
@@ -112,94 +160,66 @@ async def get_company_info(url, session, USD):
                     ).parent.stripped_strings
                 )[0].replace(",", "")
             )
-            potential_profit = round((year_high - year_low) * USD, 2)
+            potential_profit = round((year_high - year_low) * usd, 2)
         except AttributeError:
             potential_profit = None
 
         return code, current_value, p_e, potential_profit
 
 
-async def get_sp_500_info():
-    global sp_500_info
-    base_url = "https://markets.businessinsider.com/index/components/s&p_500"
-    base_company_url = "https://markets.businessinsider.com"
-    async with aiohttp.ClientSession() as session:
-
-        usd = await get_usd_currency_from_cbr(session)
-
-        for page in range(12):  # extend to 12!!!
-            async with session.get(base_url, params=[("p", page)]) as resp:
-
-                # print("Status:", resp.status)
-                # print(resp.url)
-                html = await resp.text()
-
-                soup = BS(html, features="html.parser")
-
-                stocks = soup.find_all(
-                    "a", span="", href=re.compile("stock$"), attrs={"title": True}
-                )
-                print(len(stocks), "len stocks")
-
-                for company in stocks:
-                    company_info = {
-                        "name": None,
-                        "code": None,
-                        "price": None,
-                        "P/E": None,
-                        "growth": None,
-                        "potential profit": None,
-                    }
-                    # print(item["href"], item["title"])
-                    growth = float(
-                        list(list(company.parent.next_siblings)[-4].children)[
-                            -2
-                        ].string.rstrip("%")
-                    )
-
-                    company_info["name"] = company["title"]
-                    company_info["growth"] = growth
-
-                    url = base_company_url + company["href"]
-
-                    (
-                        company_info["code"],
-                        company_info["price"],
-                        company_info["P/E"],
-                        company_info["potential profit"],
-                    ) = await get_company_info(url, session, usd)
-
-                    print(company_info)
-                    sp_500_info.append(company_info)
-                    evaluate_top_10(company_info)
+def evaluate_top10(company: dict) -> None:
+    evaluate_top10_price(company)
+    evaluate_top10_pe(company)
+    evaluate_top10_growth(company)
+    evaluate_top10_potential_profit(company)
 
 
-def evaluate_top_10(company):
+def evaluate_top10_price(company: dict) -> None:
     for i in range(10):
         if company["price"] and company["price"] > highest_price[i]["price"]:
             highest_price.insert(i, company)
             highest_price.pop()
             break
+
+
+def evaluate_top10_pe(company: dict) -> None:
     for i in range(10):
         if company["P/E"] and company["P/E"] < lowest_pe[i]["P/E"]:
             lowest_pe.insert(i, company)
             lowest_pe.pop()
             break
+
+
+def evaluate_top10_growth(company: dict) -> None:
     for i in range(10):
         if company["growth"] and company["growth"] > highest_growth[i]["growth"]:
             highest_growth.insert(i, company)
             highest_growth.pop()
             break
+
+
+def evaluate_top10_potential_profit(company: dict) -> None:
     for i in range(10):
-        if company["potential profit"] and company["potential profit"] > highest_potential_profit[i]["potential profit"]:
+        if (
+            company["potential profit"]
+            and company["potential profit"]
+            > highest_potential_profit[i]["potential profit"]
+        ):
             highest_potential_profit.insert(i, company)
             highest_potential_profit.pop()
             break
 
 
+def write_into_files() -> None:
+    with open("highest_price.txt", "w") as file:
+        file.write(str(highest_price))
+    with open("lowest_pe.txt", "w") as file:
+        file.write(str(lowest_pe))
+    with open("highest_growth.txt", "w") as file:
+        file.write(str(highest_growth))
+    with open("highest_potential_profit.txt", "w") as file:
+        file.write(str(highest_potential_profit))
+
+
 loop = asyncio.get_event_loop()
 loop.run_until_complete(get_sp_500_info())
-print("500 len", len(sp_500_info))
-# for info in sp_500_info:
-#     print(info)
-print(highest_price, highest_growth, lowest_pe, highest_potential_profit, sep="\n\n")
