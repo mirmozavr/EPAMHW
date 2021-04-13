@@ -12,34 +12,29 @@ file2.txt:
 list(merge_sorted_files(["file1.txt", "file2.txt"]))
 [1, 2, 3, 4, 5, 6]
 """
+import bisect
 from pathlib import Path
-from typing import Iterator, List, Union
+from typing import Iterator, List, Optional, Union
 
 
 def merge_sorted_files(file_list: List[Union[Path, str]]) -> Iterator:
-    queue = list(map(open_file_return_iterator, file_list))
-    result = []
+    queue = list(map(open_file_return_generator, file_list[1:]))
+    result = list(open_file_return_generator(file_list[0]))
     while queue:
         for file in queue:
-            load_next_or_remove_generator(file, queue, result)
-            bubble_single_digit(result)
+            digit = load_next_or_remove_generator(file, queue)
+            if digit is not None:
+                bisect.insort_left(result, digit)
     return iter(result)
 
 
-def open_file_return_iterator(path: Union[Path, str]) -> Iterator:
+def open_file_return_generator(path: Union[Path, str]) -> Iterator:
     with open(path) as file:
         yield from (int(row) for row in file)
 
 
-def load_next_or_remove_generator(file: Iterator, queue: list, result: list) -> None:
+def load_next_or_remove_generator(file: Iterator, queue: list) -> Optional[int]:
     try:
-        result.append(next(file))
+        return next(file)
     except StopIteration:
         queue.remove(file)
-
-
-def bubble_single_digit(result: list) -> None:
-    i = len(result) - 1
-    while i > 0 and result[i] < result[i - 1]:
-        result[i], result[i - 1] = result[i - 1], result[i]
-        i -= 1
