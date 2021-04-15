@@ -31,7 +31,9 @@ https://markets.businessinsider.com/index/components/s&p_500
 
 import asyncio
 import datetime as dt
+import json
 import re
+from typing import Iterator
 
 import aiohttp
 from bs4 import BeautifulSoup
@@ -65,11 +67,7 @@ async def get_sp_500_info() -> None:
                 html = await resp.text()
                 soup = BeautifulSoup(html, features="html.parser")
 
-                stocks = soup.find_all(
-                    "a", span="", href=re.compile("stock$"), attrs={"title": True}
-                )
-
-                for company in stocks:
+                for company in get_all_stocks_from_page(soup):
                     growth = float(
                         list(list(company.parent.next_siblings)[-4].children)[
                             -2
@@ -115,6 +113,10 @@ async def get_usd_currency_from_cbr(session: aiohttp.ClientSession) -> float:
         return float(soup.find_all("value")[-1].string.replace(",", "."))
 
 
+def get_all_stocks_from_page(soup: BeautifulSoup) -> Iterator:
+    return soup.find_all("a", span="", href=re.compile("stock$"), attrs={"title": True})
+
+
 async def get_company_info(
     url: str, session: aiohttp.ClientSession, usd: float
 ) -> tuple:
@@ -132,39 +134,31 @@ async def get_company_info(
             soup.find("span", attrs={"class": "price-section__category"}).strings
         )[-2].strip(", ")
 
-        try:
-            p_e = float(
-                list(
-                    soup.find(
-                        "div", attrs={"class": "snapshot__header"}, string="P/E Ratio"
-                    ).parent.stripped_strings
-                )[0].replace(",", "")
-            )
-        except AttributeError:
-            p_e = None
+        p_e = get_parameter_from_company_page(soup, "P/E Ratio")
 
-        try:
-            year_low = float(
-                list(
-                    soup.find(
-                        "div", attrs={"class": "snapshot__header"}, string="52 Week Low"
-                    ).parent.stripped_strings
-                )[0].replace(",", "")
-            )
-            year_high = float(
-                list(
-                    soup.find(
-                        "div",
-                        attrs={"class": "snapshot__header"},
-                        string="52 Week High",
-                    ).parent.stripped_strings
-                )[0].replace(",", "")
-            )
+        year_low = get_parameter_from_company_page(soup, "52 Week Low")
+        year_high = get_parameter_from_company_page(soup, "52 Week High")
+        if all((year_low, year_high)):
             potential_profit = round((year_high - year_low) * usd, 2)
-        except AttributeError:
+        else:
             potential_profit = None
 
         return code, current_value, p_e, potential_profit
+
+
+def get_parameter_from_company_page(soup: BeautifulSoup, string: str) -> float:
+    try:
+        return float(
+            list(
+                soup.find(
+                    "div",
+                    attrs={"class": "snapshot__header"},
+                    string=string,
+                ).parent.stripped_strings
+            )[0].replace(",", "")
+        )
+    except AttributeError:
+        pass
 
 
 def evaluate_top10(company: dict) -> None:
@@ -211,14 +205,14 @@ def evaluate_top10_potential_profit(company: dict) -> None:
 
 
 def write_into_files() -> None:
-    with open("highest_price.txt", "w") as file:
-        file.write(str(highest_price))
-    with open("lowest_pe.txt", "w") as file:
-        file.write(str(lowest_pe))
-    with open("highest_growth.txt", "w") as file:
-        file.write(str(highest_growth))
-    with open("highest_potential_profit.txt", "w") as file:
-        file.write(str(highest_potential_profit))
+    with open("highest_price.json", "w") as file:
+        file.write(json.dumps(highest_price))
+    with open("lowest_pe.json", "w") as file:
+        file.write(json.dumps(lowest_pe))
+    with open("highest_growth.json", "w") as file:
+        file.write(json.dumps(highest_growth))
+    with open("highest_potential_profit.json", "w") as file:
+        file.write(json.dumps(highest_potential_profit))
 
 
 loop = asyncio.get_event_loop()
