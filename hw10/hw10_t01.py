@@ -28,7 +28,6 @@ https://markets.businessinsider.com/index/components/s&p_500
 ...
 ]
 """
-
 import asyncio
 import datetime as dt
 import json
@@ -36,7 +35,10 @@ import re
 from typing import Iterator
 
 import aiohttp
+import nest_asyncio
 from bs4 import BeautifulSoup
+
+nest_asyncio.apply()
 
 INF = float("INF")
 NEG_INF = -float("INF")
@@ -67,31 +69,22 @@ async def get_sp_500_info() -> None:
                 html = await resp.text()
                 soup = BeautifulSoup(html, features="html.parser")
 
+                tasks = []
+                loop_inner = asyncio.get_event_loop()
                 for company in get_all_stocks_from_page(soup):
+                    name = company["title"]
                     growth = float(
                         list(list(company.parent.next_siblings)[-4].children)[
                             -2
                         ].string.rstrip("%")
                     )
-                    company_info = {
-                        "name": company["title"],
-                        "code": None,
-                        "price": None,
-                        "P/E": None,
-                        "growth": growth,
-                        "potential profit": None,
-                    }
 
                     url = base_company_url + company["href"]
+                    tasks.append(
+                        asyncio.ensure_future(get_company_info(url, usd, name, growth))
+                    )
 
-                    (
-                        company_info["code"],
-                        company_info["price"],
-                        company_info["P/E"],
-                        company_info["potential profit"],
-                    ) = await get_company_info(url, session, usd)
-
-                    evaluate_top10(company_info)
+                loop_inner.run_until_complete(asyncio.wait(tasks))
     write_into_files()
 
 
@@ -117,33 +110,39 @@ def get_all_stocks_from_page(soup: BeautifulSoup) -> Iterator:
     return soup.find_all("a", span="", href=re.compile("stock$"), attrs={"title": True})
 
 
-async def get_company_info(
-    url: str, session: aiohttp.ClientSession, usd: float
-) -> tuple:
-    async with session.get(url) as resp:
-        html = await resp.text()
-        soup = BeautifulSoup(html, features="html.parser")
+async def get_company_info(url: str, usd: float, name: str, growth: float) -> tuple:
+    async with aiohttp.ClientSession() as session:
+        async with session.get(url) as resp:
+            html = await resp.text()
+            soup = BeautifulSoup(html, features="html.parser")
 
-        current_value = float(
-            soup.find(
-                "span", attrs={"class": "price-section__current-value"}
-            ).string.replace(",", "")
-        )
+            current_value = float(
+                soup.find(
+                    "span", attrs={"class": "price-section__current-value"}
+                ).string.replace(",", "")
+            )
 
-        code = list(
-            soup.find("span", attrs={"class": "price-section__category"}).strings
-        )[-2].strip(", ")
+            code = list(
+                soup.find("span", attrs={"class": "price-section__category"}).strings
+            )[-2].strip(", ")
 
-        p_e = get_parameter_from_company_page(soup, "P/E Ratio")
+            p_e = get_parameter_from_company_page(soup, "P/E Ratio")
 
-        year_low = get_parameter_from_company_page(soup, "52 Week Low")
-        year_high = get_parameter_from_company_page(soup, "52 Week High")
-        if all((year_low, year_high)):
-            potential_profit = round((year_high - year_low) * usd, 2)
-        else:
-            potential_profit = None
-
-        return code, current_value, p_e, potential_profit
+            year_low = get_parameter_from_company_page(soup, "52 Week Low")
+            year_high = get_parameter_from_company_page(soup, "52 Week High")
+            if all((year_low, year_high)):
+                potential_profit = round((year_high - year_low) * usd, 2)
+            else:
+                potential_profit = None
+            company_info = {
+                "name": name,
+                "code": code,
+                "price": current_value,
+                "P/E": p_e,
+                "growth": growth,
+                "potential profit": potential_profit,
+            }
+            evaluate_top10(company_info)
 
 
 def get_parameter_from_company_page(soup: BeautifulSoup, string: str) -> float:
