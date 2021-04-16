@@ -2,7 +2,7 @@ import os
 
 from hw9.hw9_t03 import universal_file_counter
 
-base_dir = os.path.dirname(__file__)
+base_dir = os.path.dirname(__file__) + "/task03_test_files"
 
 
 def test_count_lines_in_txt():
