@@ -35,10 +35,7 @@ import re
 from typing import Iterator
 
 import aiohttp
-import nest_asyncio
 from bs4 import BeautifulSoup
-
-nest_asyncio.apply()
 
 INF = float("INF")
 NEG_INF = -float("INF")
@@ -63,14 +60,12 @@ async def get_sp_500_info() -> None:
 
         usd = await get_usd_currency_from_cbr(session)
 
-        for page in range(1, 12):
+        for page in range(1, 13):
             async with session.get(base_url, params=[("p", page)]) as resp:
 
                 html = await resp.text()
                 soup = BeautifulSoup(html, features="html.parser")
 
-                tasks = []
-                loop_inner = asyncio.get_event_loop()
                 for company in get_all_stocks_from_page(soup):
                     name = company["title"]
                     growth = float(
@@ -79,12 +74,11 @@ async def get_sp_500_info() -> None:
                         ].string.rstrip("%")
                     )
 
-                    url = base_company_url + company["href"]
-                    tasks.append(
-                        asyncio.ensure_future(get_company_info(url, usd, name, growth))
+                    company_url = base_company_url + company["href"]
+                    asyncio.create_task(
+                        get_company_info(company_url, usd, name, growth)
                     )
-
-                loop_inner.run_until_complete(asyncio.wait(tasks))
+                    await asyncio.sleep(0.05)
     write_into_files()
 
 
@@ -205,13 +199,13 @@ def evaluate_top10_potential_profit(company: dict) -> None:
 
 def write_into_files() -> None:
     with open("highest_price.json", "w") as file:
-        file.write(json.dumps(highest_price))
+        json.dump(highest_price, file)
     with open("lowest_pe.json", "w") as file:
-        file.write(json.dumps(lowest_pe))
+        json.dump(lowest_pe, file)
     with open("highest_growth.json", "w") as file:
-        file.write(json.dumps(highest_growth))
+        json.dump(highest_growth, file)
     with open("highest_potential_profit.json", "w") as file:
-        file.write(json.dumps(highest_potential_profit))
+        json.dump(highest_potential_profit, file)
 
 
 loop = asyncio.get_event_loop()
