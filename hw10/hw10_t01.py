@@ -69,7 +69,7 @@ async def get_sp_500_info() -> None:
 
                     company_url = base_company_url + company["href"]
                     asyncio.create_task(
-                        get_company_info(company_url, usd, name, growth)
+                        get_company_info(session, company_url, usd, name, growth)
                     )
                     await asyncio.sleep(0.1)  #
     write_into_json_files()
@@ -78,7 +78,7 @@ async def get_sp_500_info() -> None:
 async def get_usd_currency_from_cbr(session: aiohttp.ClientSession) -> float:
     today_date = dt.datetime.strftime(dt.datetime.today(), "%d/%m/%Y")
     yesterday_date = dt.datetime.strftime(
-        dt.datetime.today() - dt.timedelta(days=1), "%d/%m/%Y"
+        dt.datetime.today() - dt.timedelta(days=2), "%d/%m/%Y"
     )
     usd_params = {
         "date_req1": yesterday_date,
@@ -97,39 +97,40 @@ def get_all_stocks_from_page(soup: BeautifulSoup) -> Iterator:
     return soup.find_all("a", span="", href=re.compile("stock$"), attrs={"title": True})
 
 
-async def get_company_info(url: str, usd: float, name: str, growth: float) -> tuple:
-    async with aiohttp.ClientSession() as session:
-        async with session.get(url) as resp:
-            html = await resp.text()
-            soup = BeautifulSoup(html, features="html.parser")
+async def get_company_info(
+    session: aiohttp.ClientSession, url: str, usd: float, name: str, growth: float
+) -> tuple:
+    async with session.get(url) as resp:
+        html = await resp.text()
+        soup = BeautifulSoup(html, features="html.parser")
 
-            current_value = float(
-                soup.find(
-                    "span", attrs={"class": "price-section__current-value"}
-                ).string.replace(",", "")
-            )
+        current_value = float(
+            soup.find(
+                "span", attrs={"class": "price-section__current-value"}
+            ).string.replace(",", "")
+        )
 
-            code = list(
-                soup.find("span", attrs={"class": "price-section__category"}).strings
-            )[-2].strip(", ")
+        code = list(
+            soup.find("span", attrs={"class": "price-section__category"}).strings
+        )[-2].strip(", ")
 
-            p_e = get_parameter_from_company_page(soup, "P/E Ratio")
+        p_e = get_parameter_from_company_page(soup, "P/E Ratio")
 
-            year_low = get_parameter_from_company_page(soup, "52 Week Low")
-            year_high = get_parameter_from_company_page(soup, "52 Week High")
-            if all((year_low, year_high)):
-                potential_profit = round((year_high - year_low) * usd, 2)
-            else:
-                potential_profit = None
-            company_info = {
-                "name": name,
-                "code": code,
-                "price": current_value,
-                "P/E": p_e,
-                "growth": growth,
-                "potential_profit": potential_profit,
-            }
-            evaluate_top10(company_info)
+        year_low = get_parameter_from_company_page(soup, "52 Week Low")
+        year_high = get_parameter_from_company_page(soup, "52 Week High")
+        if all((year_low, year_high)):
+            potential_profit = round((year_high - year_low) * usd, 2)
+        else:
+            potential_profit = None
+        company_info = {
+            "name": name,
+            "code": code,
+            "price": current_value,
+            "P/E": p_e,
+            "growth": growth,
+            "potential_profit": potential_profit,
+        }
+        evaluate_top10(company_info)
 
 
 def get_parameter_from_company_page(soup: BeautifulSoup, string: str) -> float:
