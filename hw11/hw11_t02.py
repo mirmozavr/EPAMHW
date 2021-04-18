@@ -1,5 +1,6 @@
 """
 You are given the following code.
+
 class Order:
     morning_discount = 0.25
     def __init__(self, price):
