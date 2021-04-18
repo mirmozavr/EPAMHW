@@ -24,16 +24,9 @@ assert SizesEnum.XL == "XL"
 """
 
 
-class UpperAttrMetaclass(type):
+class SimplifiedEnum(type):
+    def __new__(cls, clsname: str, bases: type, dct: dict) -> type:
+        for name in dct["_" + clsname + "__keys"]:
+            cls.__setattr__(cls, name, name)
 
-    def __new__(cls, clsname, bases, dct):
-
-        uppercase_attr = {}
-        for name, val in dct.items():
-            if not name.startswith('__'):
-                uppercase_attr[name.upper()] = val
-            else:
-                uppercase_attr[name] = val
-
-        return type.__new__(cls, clsname, bases, uppercase_attr)
-
+        return type.__new__(cls, clsname, bases, dct)
