@@ -30,6 +30,7 @@ https://markets.businessinsider.com/index/components/s&p_500
 """
 import asyncio
 import datetime as dt
+import heapq
 import json
 import re
 from typing import Iterator
@@ -37,20 +38,12 @@ from typing import Iterator
 import aiohttp
 from bs4 import BeautifulSoup
 
-INF = float("INF")
 NEG_INF = -float("INF")
-company_dummy = {
-    "name": "Dummy",
-    "code": "DUMMY",
-    "price": NEG_INF,
-    "P/E": INF,
-    "growth": NEG_INF,
-    "potential profit": NEG_INF,
-}
-highest_price = [company_dummy] * 10
-lowest_pe = [company_dummy] * 10
-highest_growth = [company_dummy] * 10
-highest_potential_profit = [company_dummy] * 10
+
+highest_price = [(NEG_INF, "", {})] * 10
+lowest_pe = [(NEG_INF, "", {})] * 10
+highest_growth = [(NEG_INF, "", {})] * 10
+highest_potential_profit = [(NEG_INF, "", {})] * 10
 
 
 async def get_sp_500_info() -> None:
@@ -60,7 +53,7 @@ async def get_sp_500_info() -> None:
 
         usd = await get_usd_currency_from_cbr(session)
 
-        for page in range(1, 13):
+        for page in range(1, 2):
             async with session.get(base_url, params=[("p", page)]) as resp:
 
                 html = await resp.text()
@@ -78,8 +71,8 @@ async def get_sp_500_info() -> None:
                     asyncio.create_task(
                         get_company_info(company_url, usd, name, growth)
                     )
-                    await asyncio.sleep(0.05)
-    write_into_files()
+                    await asyncio.sleep(0.1)  #
+    write_into_json_files()
 
 
 async def get_usd_currency_from_cbr(session: aiohttp.ClientSession) -> float:
@@ -134,7 +127,7 @@ async def get_company_info(url: str, usd: float, name: str, growth: float) -> tu
                 "price": current_value,
                 "P/E": p_e,
                 "growth": growth,
-                "potential profit": potential_profit,
+                "potential_profit": potential_profit,
             }
             evaluate_top10(company_info)
 
@@ -155,57 +148,41 @@ def get_parameter_from_company_page(soup: BeautifulSoup, string: str) -> float:
 
 
 def evaluate_top10(company: dict) -> None:
-    evaluate_top10_price(company)
-    evaluate_top10_pe(company)
-    evaluate_top10_growth(company)
-    evaluate_top10_potential_profit(company)
+    if company["price"]:
+        heapq.heappushpop(highest_price, (company["price"], company["code"], company))
+    if company["P/E"]:
+        heapq.heappushpop(lowest_pe, (-company["P/E"], company["code"], company))
+    if company["growth"]:
+        heapq.heappushpop(highest_growth, (company["growth"], company["code"], company))
+    if company["potential_profit"]:
+        heapq.heappushpop(
+            highest_potential_profit,
+            (company["potential_profit"], company["code"], company),
+        )
 
 
-def evaluate_top10_price(company: dict) -> None:
-    for i in range(10):
-        if company["price"] and company["price"] > highest_price[i]["price"]:
-            highest_price.insert(i, company)
-            highest_price.pop()
-            break
+def write_into_json_files() -> None:
+    write_into_json("highest_price.json", highest_price, "price")
+    write_into_json("lowest_pe.json", lowest_pe, "P/E", reverse=False)
+    write_into_json("highest_growth.json", highest_growth, "growth")
+    write_into_json(
+        "highest_potential_profit.json", highest_potential_profit, "potential_profit"
+    )
 
 
-def evaluate_top10_pe(company: dict) -> None:
-    for i in range(10):
-        if company["P/E"] and company["P/E"] < lowest_pe[i]["P/E"]:
-            lowest_pe.insert(i, company)
-            lowest_pe.pop()
-            break
-
-
-def evaluate_top10_growth(company: dict) -> None:
-    for i in range(10):
-        if company["growth"] and company["growth"] > highest_growth[i]["growth"]:
-            highest_growth.insert(i, company)
-            highest_growth.pop()
-            break
-
-
-def evaluate_top10_potential_profit(company: dict) -> None:
-    for i in range(10):
-        if (
-            company["potential profit"]
-            and company["potential profit"]
-            > highest_potential_profit[i]["potential profit"]
-        ):
-            highest_potential_profit.insert(i, company)
-            highest_potential_profit.pop()
-            break
-
-
-def write_into_files() -> None:
-    with open("highest_price.json", "w") as file:
-        json.dump(highest_price, file)
-    with open("lowest_pe.json", "w") as file:
-        json.dump(lowest_pe, file)
-    with open("highest_growth.json", "w") as file:
-        json.dump(highest_growth, file)
-    with open("highest_potential_profit.json", "w") as file:
-        json.dump(highest_potential_profit, file)
+def write_into_json(
+    file_name: str, data: list, sort_by: str, reverse: bool = True
+) -> None:
+    with open(file_name, "w") as file:
+        json.dump(
+            sorted(
+                (item[2] for item in data),
+                key=lambda info: info[sort_by],
+                reverse=reverse,
+            ),
+            file,
+            indent=0,
+        )
 
 
 loop = asyncio.get_event_loop()
