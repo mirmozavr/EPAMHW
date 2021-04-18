@@ -29,7 +29,6 @@ https://markets.businessinsider.com/index/components/s&p_500
 ]
 """
 import asyncio
-import datetime as dt
 import heapq
 import json
 import re
@@ -53,7 +52,7 @@ async def get_sp_500_info() -> None:
 
         usd = await get_usd_currency_from_cbr(session)
 
-        for page in range(1, 2):
+        for page in range(1, 13):
             async with session.get(base_url, params=[("p", page)]) as resp:
 
                 html = await resp.text()
@@ -76,21 +75,12 @@ async def get_sp_500_info() -> None:
 
 
 async def get_usd_currency_from_cbr(session: aiohttp.ClientSession) -> float:
-    today_date = dt.datetime.strftime(dt.datetime.today(), "%d/%m/%Y")
-    yesterday_date = dt.datetime.strftime(
-        dt.datetime.today() - dt.timedelta(days=2), "%d/%m/%Y"
-    )
-    usd_params = {
-        "date_req1": yesterday_date,
-        "date_req2": today_date,
-        "VAL_NM_RQ": "R01235",
-    }
-    async with session.get(
-        "http://www.cbr.ru/scripts/XML_dynamic.asp", params=usd_params
-    ) as resp:
+    async with session.get("http://www.cbr.ru/scripts/XML_daily.asp") as resp:
         html = await resp.text()
         soup = BeautifulSoup(html, features="html.parser")
-        return float(soup.find_all("value")[-1].string.replace(",", "."))
+        return float(
+            soup.find("valute", attrs={"id": "R01235"}).value.string.replace(",", ".")
+        )
 
 
 def get_all_stocks_from_page(soup: BeautifulSoup) -> Iterator:
