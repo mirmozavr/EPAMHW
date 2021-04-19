@@ -30,15 +30,3 @@ class Order:
 
     def final_price(self) -> float:
         return self.price - self.price * self.discount_program
-
-
-def morning_discount() -> float:
-    return 0.5
-
-
-def elder_discount() -> float:
-    return 0.9
-
-
-order_1 = Order(100, morning_discount)
-order_2 = Order(100, elder_discount)
