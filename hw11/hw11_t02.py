@@ -24,9 +24,11 @@ from typing import Callable
 
 
 class Order:
-    def __init__(self, price: int, discount_program: Callable):
+    def __init__(self, price: int, discount_program: Callable = None):
         self.price = price
-        self.discount_program = discount_program()
+        self.discount = 0
+        if discount_program:
+            discount_program(self)
 
     def final_price(self) -> float:
-        return self.price - self.price * self.discount_program
+        return self.price - self.discount
