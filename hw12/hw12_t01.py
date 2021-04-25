@@ -49,8 +49,10 @@ class HomeworkResult(Base):
     author_lastname = Column(String)
     homework_text = Column(String)
     homework_created = Column(DateTime)
-    __table_args__ = ForeignKeyConstraint(
-        (homework_text, homework_created, author_firstname, author_lastname),
-        (Homework.text, Homework.created, Student.first_name, Student.last_name),
-        ondelete="CASCADE",
+    __table_args__ = (
+        ForeignKeyConstraint(
+            (homework_text, homework_created, author_firstname, author_lastname),
+            (Homework.text, Homework.created, Student.first_name, Student.last_name),
+            ondelete="CASCADE",
+        ),
     )
