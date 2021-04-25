@@ -43,6 +43,7 @@ class Teacher(Base):
 
 
 class HomeworkResult(Base):
+    __tablename__ = "homeworkresult"
     solution = Column(String, primary_key=True)
     created = Column(DateTime, primary_key=True)
     author_firstname = Column(String)
