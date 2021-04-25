@@ -43,14 +43,10 @@ class Teacher(Base):
 
 
 class HomeworkResult(Base):
-    author = Column(
-        ForeignKeyConstraint(("student.first_name", "student.last_name")),
-        primary_key=True,
-    )
-    author_firstname = Column(String)
-    author_lastname = Column(String)
     solution = Column(String, primary_key=True)
     created = Column(DateTime, primary_key=True)
+    author_firstname = Column(String)
+    author_lastname = Column(String)
     homework_text = Column(String)
     homework_created = Column(DateTime)
     __table_args__ = ForeignKeyConstraint(
