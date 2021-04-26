@@ -5,13 +5,24 @@ def test_multiplier_discount():
     def morning_discount(order):
         order.discount = 0.5 * order.price
 
-    order_1 = Order(100, morning_discount)
-    assert order_1.final_price() == 50
+    order = Order(100, morning_discount)
+    assert order.final_price() == 50
 
 
 def test_subtraction_discount():
     def minus_one_point(order):
         order.discount = 1
 
-    order_1 = Order(50, minus_one_point)
-    assert order_1.final_price() == 49.0
+    order = Order(50, minus_one_point)
+    assert order.final_price() == 49.0
+
+
+def test_new_strategy():
+    def minus_one_point_each_order(order):
+        order.discount += 1
+
+    order = Order(13, minus_one_point_each_order)
+    assert order.final_price() == 12
+    assert order.final_price() == 11
+    assert order.final_price() == 10
+    assert order.final_price() == 10

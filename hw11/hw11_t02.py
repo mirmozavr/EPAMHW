@@ -25,10 +25,11 @@ from typing import Callable
 
 class Order:
     def __init__(self, price: int, discount_program: Callable = None):
+        self.discount_program = discount_program
         self.price = price
         self.discount = 0
-        if discount_program:
-            discount_program(self)
 
     def final_price(self) -> float:
-        return self.price - self.discount
+        if self.discount_program:
+            self.discount_program(self)
+        return self.price - self.discount if self.price - self.discount > 10 else 10
