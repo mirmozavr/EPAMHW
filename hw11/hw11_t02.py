@@ -31,5 +31,5 @@ class Order:
 
     def final_price(self) -> float:
         if self.discount_program:
-            self.discount_program(self)
-        return self.price - self.discount if self.price - self.discount > 10 else 10
+            return self.discount_program(self)
+        return self.price
