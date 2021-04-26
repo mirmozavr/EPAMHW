@@ -17,9 +17,17 @@ Utilizing that framework capabilities, create
 Utilize ORM capabilities as much as possible, avoiding executing raw SQL queries.
 """
 
-from sqlalchemy import Column, DateTime, ForeignKeyConstraint, Interval, String
+from sqlalchemy import (
+    Column,
+    DateTime,
+    ForeignKeyConstraint,
+    Interval,
+    String,
+    create_engine,
+)
 from sqlalchemy.orm import declarative_base
 
+engine = create_engine("sqlite+pysqlite:///main.db", echo=True, future=True)
 Base = declarative_base()
 
 
@@ -62,3 +70,6 @@ class HomeworkResult(Base):
             ondelete="CASCADE",
         ),
     )
+
+
+Base.metadata.create_all(bind=engine)
