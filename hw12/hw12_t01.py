@@ -36,6 +36,11 @@ class Homework(Base):
     text = Column(String, primary_key=True)
     created = Column(DateTime, primary_key=True)
     deadline = Column(Interval)
+    teacher_firstname = Column(String)
+    teacher_lastname = Column(String)
+
+    def __str__(self):
+        return f"HW: {self.text}, created {self.created.strftime('%d/%m/%Y')}, deadline {self.deadline.days} days"
 
 
 class Student(Base):
@@ -43,11 +48,17 @@ class Student(Base):
     first_name = Column(String, primary_key=True)
     last_name = Column(String, primary_key=True)
 
+    def __str__(self):
+        return f"Student: {self.first_name} {self.last_name}"
+
 
 class Teacher(Base):
     __tablename__ = "teacher"
     first_name = Column(String, primary_key=True)
     last_name = Column(String, primary_key=True)
+
+    def __str__(self):
+        return f"Teacher: {self.first_name} {self.last_name}"
 
 
 class HomeworkResult(Base):
@@ -70,6 +81,9 @@ class HomeworkResult(Base):
             ondelete="CASCADE",
         ),
     )
+
+    def __str__(self):
+        return f"HW result: {self.solution}"
 
 
 Base.metadata.create_all(bind=engine)

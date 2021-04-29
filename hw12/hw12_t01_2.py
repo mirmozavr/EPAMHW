@@ -11,7 +11,11 @@ session = sessionmaker(bind=engine)()
 student = Student(first_name="John", last_name="Woo")
 teacher = Teacher(first_name="Jet", last_name="Lee")
 homework = Homework(
-    text="Do the task", created=datetime(2021, 3, 15), deadline=timedelta(10)
+    text="Do the task",
+    created=datetime(2021, 3, 15),
+    deadline=timedelta(10),
+    teacher_firstname="Jet",
+    teacher_lastname="Lee",
 )
 homework_result = HomeworkResult(
     solution="Task",
