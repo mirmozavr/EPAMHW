@@ -1,4 +1,4 @@
-"""add middle name
+"""Add middle name.
 
 Revision ID: 5a33e9538dfa
 Revises: dacfb31bf13f

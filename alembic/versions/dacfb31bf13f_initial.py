@@ -1,4 +1,4 @@
-"""INITIAL
+"""INITIAL.
 
 Revision ID: dacfb31bf13f
 Revises:
