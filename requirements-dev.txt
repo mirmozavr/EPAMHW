@@ -21,6 +21,7 @@ pytest-cov>=2.10.1
 isort==5.7.0
 
 SQLAlchemy==1.4.11
+alembic==1.5.8
 
 aiohttp==3.7.4.post0
 async-timeout==3.0.1
