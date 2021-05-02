@@ -87,4 +87,4 @@ class HomeworkResult(Base):
         return f"HW result: {self.solution}"
 
 
-"""Base.metadata.create_all(bind=engine)"""
+Base.metadata.create_all(bind=engine)
