@@ -47,6 +47,7 @@ class Student(Base):
     __tablename__ = "student"
     first_name = Column(String, primary_key=True)
     last_name = Column(String, primary_key=True)
+    middle_name = Column(String, primary_key=True, server_default="Bob")
 
     def __str__(self):
         return f"Student: {self.first_name} {self.last_name}"
@@ -86,4 +87,4 @@ class HomeworkResult(Base):
         return f"HW result: {self.solution}"
 
 
-Base.metadata.create_all(bind=engine)
+"""Base.metadata.create_all(bind=engine)"""
